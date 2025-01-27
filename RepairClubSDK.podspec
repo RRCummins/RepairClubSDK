@@ -14,7 +14,6 @@ Pod::Spec.new do |s|
 
   s.platform     = :ios, "16.1"
   s.ios.deployment_target = "16.1"
-  s.osx.deployment_target = "11.0"
 
   s.vendored_frameworks = "Frameworks/RepairClubSDK.xcframework"
 
