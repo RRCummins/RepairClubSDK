@@ -283,6 +283,11 @@ public enum FirmwareReleaseType : Swift.String, Swift.Codable, Swift.CaseIterabl
     get
   }
 }
+public struct FirmwareVersionInfo {
+  public let version: Swift.String
+  public let externalNotes: [Swift.String]?
+  public let internalNotes: [Swift.String]?
+}
 public struct LiveFeedDatedEntry : Swift.Codable, Swift.Identifiable {
   public var id: Foundation.UUID
   public let pid: Swift.String
@@ -521,6 +526,7 @@ public enum CommonError : Swift.Error, Swift.Codable {
   case missingVehicleEntry(RepairClubSDK.ErrorLevel)
   case expiredToken(RepairClubSDK.ErrorLevel)
   case authenticationFailed(RepairClubSDK.ErrorLevel)
+  case authenticationFaileduserNotFound(RepairClubSDK.ErrorLevel)
   case advancedScanNotFound(RepairClubSDK.ErrorLevel)
   case invalidToken(RepairClubSDK.ErrorLevel)
   case noScanFound(RepairClubSDK.ErrorLevel)
@@ -970,6 +976,8 @@ public struct ModelResult : Swift.Codable {
   public var osName: Swift.String
   public var osVersion: Swift.String
   public var userID: Swift.String
+  public var region: Swift.String
+  public var timeZoneName: Swift.String
   public var statuses: [RepairClubSDK.StatusUpdate]
   public var deviceLog: RepairClubSDK.DeviceInfoLog?
   public var bleLog: RepairClubSDK.BleLog?
@@ -1015,6 +1023,8 @@ public struct DeviceInfoLog : Swift.Identifiable, Swift.Codable {
   public var deviceHardwareIdentifier: Swift.String?
   public var deviceFirmwareVersion: Swift.String?
   public var connected: Swift.Bool
+  public var offsetCorrection: Swift.Int?
+  public var apiLevel: Swift.Int?
   public typealias ID = Foundation.UUID
   public func encode(to encoder: any Swift.Encoder) throws
   public init(from decoder: any Swift.Decoder) throws
@@ -2079,7 +2089,9 @@ extension RepairClubSDK.ResponseStatus {
   final public func cancelDeviceFirmwareUpdate(completionCallback: @escaping ((RepairClubSDK.Result<Swift.Bool, any Swift.Error>) -> Swift.Void))
   final public func startDeviceFirmwareUpdate(reqVersion: Swift.String? = nil, reqReleaseLevel: RepairClubSDK.FirmwareReleaseType? = nil)
   final public func stopDeviceFirmwareUpdate()
-  final public func subscribeToFirmwareVersionChanges(completionCallback: @escaping ((Swift.String, Swift.String) -> Swift.Void))
+  final public func subscribeToFirmwareVersionChanges(reqReleaseLevel: RepairClubSDK.FirmwareReleaseType? = nil, completionCallback: @escaping ((Swift.String, Swift.String) -> Swift.Void))
+  final public func getFirmwareVersions(reqReleaseLevel: RepairClubSDK.FirmwareReleaseType = .production, completion: @escaping ((Swift.String, Swift.String?, Swift.String?, Swift.String?) -> Swift.Void))
+  final public func getFirmwareVersionsWithNotes(reqReleaseLevel: RepairClubSDK.FirmwareReleaseType = .production, completion: @escaping ((Swift.String, RepairClubSDK.FirmwareVersionInfo?, RepairClubSDK.FirmwareVersionInfo?, RepairClubSDK.FirmwareVersionInfo?) -> Swift.Void))
   final public func getDeviceFirmwareVersion() -> RepairClubSDK.Result<Swift.String?, any Swift.Error>
   final public func getNewestAvailableFirmwareVersion() -> RepairClubSDK.Result<Swift.String?, any Swift.Error>
   final public func startDemoMode(demoOn: Swift.Bool, _ connectionHandler: @escaping ((RepairClubSDK.ConnectionEntry, RepairClubSDK.ConnectionStage, RepairClubSDK.ConnectionState) -> Swift.Void))
