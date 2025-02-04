@@ -2035,7 +2035,7 @@ extension RepairClubSDK.ResponseStatus {
   final public func endLiveDataStream() -> Swift.Bool
   final public func currentLiveFeedCSV(countToKeep: Swift.Int = 1_000) -> RepairClubSDK.Result<Swift.String, any Swift.Error>
   final public func returnLiveFeedCSV(from feedEntries: [RepairClubSDK.LiveFeedDatedEntry], countToKeep: Swift.Int = 1_000) -> RepairClubSDK.Result<Swift.String, any Swift.Error>
-  final public func requestDataPoint(pid: Swift.String, callback: @escaping (Swift.String) -> Swift.Void)
+  final public func requestDataPoint(pid: Swift.String, oldAndNew: Swift.Bool = false, callback: @escaping (Swift.String) -> Swift.Void)
   final public func subscribeToMonitors(_ completionHandler: @escaping ((RepairClubSDK.Result<[RepairClubSDK.ValueMonitor], any Swift.Error>) -> Swift.Void))
   final public func subscribeToMode06Monitors(_ completionHandler: @escaping ((RepairClubSDK.Result<[RepairClubSDK.ValueMonitor], any Swift.Error>) -> Swift.Void))
   final public func subscribeToMode06SupportedMonitors(_ completionHandler: @escaping ((RepairClubSDK.Result<[Swift.String], any Swift.Error>) -> Swift.Void))
