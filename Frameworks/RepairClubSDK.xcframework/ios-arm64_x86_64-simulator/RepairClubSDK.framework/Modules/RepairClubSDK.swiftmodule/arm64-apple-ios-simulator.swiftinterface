@@ -32,8 +32,9 @@ public struct ScanEntry : Swift.Codable, Swift.Identifiable, Swift.Hashable, Swi
   public var scanTime: Swift.Int?
   public var status: RepairClubSDK.Status?
   public var configType: Swift.String?
-  public var sessionId: Swift.String?
-  public var deviceId: Swift.String?
+  public var sessionId: Swift.String
+  public var deviceId: Swift.String
+  public var deviceFirmwareVersion: Swift.String
   public var allTroubleCodes: [RepairClubSDK.TroubleCodeEntry] {
     get
   }
@@ -63,9 +64,6 @@ public struct ScanEntry : Swift.Codable, Swift.Identifiable, Swift.Hashable, Swi
 }
 extension RepairClubSDK.ScanEntry {
   public func flattenCodesIntoCodeVINPair() -> [(code: RepairClubSDK.TroubleCodeEntry, vin: Swift.String)]
-}
-extension RepairClubSDK.ScanEntry {
-  public static func exampleScan() -> RepairClubSDK.ScanEntry
 }
 extension UIKit.UIViewController {
   @_Concurrency.MainActor @preconcurrency public static let delayShort: Swift.Double
