@@ -280,7 +280,6 @@ typedef unsigned int swift_uint4  __attribute__((__ext_vector_type__(4)));
 #if __has_warning("-Watimport-in-framework-header")
 #pragma clang diagnostic ignored "-Watimport-in-framework-header"
 #endif
-@import ObjectiveC;
 @import UIKit;
 #endif
 
@@ -317,13 +316,6 @@ SWIFT_CLASS("_TtC13RepairClubSDK19KeyboardLayoutGuide")
 @end
 
 
-
-
-SWIFT_CLASS("_TtC13RepairClubSDK10PDFCreator")
-@interface PDFCreator : NSObject
-- (nonnull instancetype)init SWIFT_UNAVAILABLE;
-+ (nonnull instancetype)new SWIFT_UNAVAILABLE_MSG("-init is unavailable");
-@end
 
 
 

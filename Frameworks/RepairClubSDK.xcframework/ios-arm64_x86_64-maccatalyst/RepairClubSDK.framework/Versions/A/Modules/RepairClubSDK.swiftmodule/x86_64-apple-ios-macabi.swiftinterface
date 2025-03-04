@@ -8,7 +8,6 @@ import CoreBluetooth
 import CoreLocation
 import CryptoKit
 import Foundation
-import PDFKit
 @_exported import RepairClubSDK
 import Security
 import Swift
@@ -30,11 +29,12 @@ public struct ScanEntry : Swift.Codable, Swift.Identifiable, Swift.Hashable, Swi
   public var startTime: Foundation.Date?
   public var endTime: Foundation.Date?
   public var scanTime: Swift.Int?
-  public var status: RepairClubSDK.Status?
+  public var status: RepairClubSDK.Status
   public var configType: Swift.String?
   public var sessionId: Swift.String
   public var deviceId: Swift.String
   public var deviceFirmwareVersion: Swift.String
+  public var freezeFrameValues: [Swift.String : [RepairClubSDK.ValueMonitor]]
   public var allTroubleCodes: [RepairClubSDK.TroubleCodeEntry] {
     get
   }
@@ -1365,6 +1365,7 @@ public enum SampleVehicle : Swift.String, Swift.Codable, Swift.CaseIterable {
   case nissanVersa2016
   case infinityQX802019
   case infinityQ502022
+  case chevroletCamaro2010
   public var description: Swift.String {
     get
   }
@@ -1380,37 +1381,6 @@ public enum SampleVehicle : Swift.String, Swift.Codable, Swift.CaseIterable {
   public var rawValue: Swift.String {
     get
   }
-}
-public struct RepairReportCreationEntry {
-  public init(headerImage: UIKit.UIImage? = nil, vehicleYear: Swift.String? = nil, vehicleName: Swift.String? = nil, vehicleVIN: Swift.String? = nil, reportName: Swift.String? = nil, reportDate: Swift.String? = nil, reportTime: Swift.String? = nil, moduleCodes: [RepairClubSDK.ModuleItem], noCodesFound: Swift.Bool, discaimer: Swift.String? = nil, qrCode: UIKit.UIImage? = nil)
-  public let id: Swift.String
-  public let headerImage: UIKit.UIImage?
-  public let vehicleYear: Swift.String?
-  public let vehicleName: Swift.String?
-  public let vehicleVIN: Swift.String?
-  public let reportName: Swift.String?
-  public let reportDate: Swift.String?
-  public let reportTime: Swift.String?
-  public let moduleCodes: [RepairClubSDK.ModuleItem]
-  public let noCodesFound: Swift.Bool
-  public let discaimer: Swift.String?
-  public let qrCode: UIKit.UIImage?
-}
-public struct RepairReportCodeEntry : Swift.Equatable {
-  public init(pid: Swift.String, status: Swift.String, description: Swift.String, fixes: [Swift.String])
-  public let id: Swift.String
-  public let pid: Swift.String
-  public let status: Swift.String
-  public let description: Swift.String
-  public let fixes: [Swift.String]
-  public static func == (lhs: RepairClubSDK.RepairReportCodeEntry, rhs: RepairClubSDK.RepairReportCodeEntry) -> Swift.Bool
-}
-@objc public class PDFCreator : ObjectiveC.NSObject {
-  final public let entry: RepairClubSDK.RepairReportCreationEntry
-  final public let indent: CoreFoundation.CGFloat
-  public init(repairReportEntry: RepairClubSDK.RepairReportCreationEntry)
-  public func createReport() -> Foundation.Data
-  @objc deinit
 }
 public enum DeviceConnectionState : Swift.Codable {
   case disconnected
@@ -1479,6 +1449,9 @@ public struct TechTip : Swift.Codable, Swift.Identifiable, Swift.Hashable, Swift
   public var tip: Swift.String?
   public var quality: RepairClubSDK.TechTip.Quality
   public init(from decoder: any Swift.Decoder) throws
+  public var displayText: Swift.String {
+    get
+  }
   public func hash(into hasher: inout Swift.Hasher)
   public static func == (a: RepairClubSDK.TechTip, b: RepairClubSDK.TechTip) -> Swift.Bool
   public typealias ID = Foundation.UUID
@@ -1978,7 +1951,10 @@ extension RepairClubSDK.ResponseStatus {
 }
 @_hasMissingDesignatedInitializers final public class RepairClubManager : Combine.ObservableObject {
   public static let shared: RepairClubSDK.RepairClubManager
-  final public var repairClubSDKVersion: Swift.String {
+  final public var repairClubSdkVersion: Swift.String {
+    get
+  }
+  final public var repairClubSdkBuild: Swift.String {
     get
   }
   @Combine.Published @_projectedValueProperty($firmwareUpdateProgress) final public var firmwareUpdateProgress: RepairClubSDK.FirmwareProgress? {
@@ -2039,7 +2015,7 @@ extension RepairClubSDK.ResponseStatus {
   final public func subscribeToMode06SupportedMonitors(_ completionHandler: @escaping ((RepairClubSDK.Result<[Swift.String], any Swift.Error>) -> Swift.Void))
   final public func requestMonitors(_ sparkVehicle: Swift.Bool = true)
   final public func requestMode06Monitors(shouldLoop: Swift.Bool = true)
-  final public func requestReadinessMonitors(shouldLoop: Swift.Bool = false)
+  final public func requestReadinessMonitors(shouldLoop: Swift.Bool = false, reqType: Swift.Int = 5)
   final public func startRequestMonitorsTimer()
   final public func endRequestMonitorsTimer()
   final public func registerMilChange(callback completionHandler: @escaping ((RepairClubSDK.Result<Swift.Bool, any Swift.Error>) -> Swift.Void))
@@ -2067,6 +2043,7 @@ extension RepairClubSDK.ResponseStatus {
   final public func configureSDK(with configuration: RepairClubSDK.SDKConfiguration)
   final public func returnDevInfo(with key: Swift.String, completionHandler: @escaping ((RepairClubSDK.Result<Any, any Swift.Error>) -> Swift.Void))
   final public func setProcess(with key: Swift.String)
+  final public func sendAdditionalDataRequests()
   final public func clearCache(type: RepairClubSDK.RepairClubManager.CacheType)
   final public func isVinUnavailable() -> Swift.Bool
   final public func isUseToastEnabled() -> Swift.Bool
@@ -2138,12 +2115,12 @@ public enum StepStatus {
   case failure(any Swift.Error)
 }
 public enum ScanProgressUpdate {
-  case scanStarted(scanInfo: RepairClubSDK.OperationInfo)
+  case scanStarted(scanInfo: RepairClubSDK.OperationInfo, scanEntry: RepairClubSDK.ScanEntry)
   case progressUpdate(progress: Swift.Double)
   case moduleScanningUpdate(moduleName: Swift.String)
-  case modulesUpdate(modules: [RepairClubSDK.ModuleItem])
-  case scanSucceeded(scanEntry: RepairClubSDK.ScanEntry?, modules: [RepairClubSDK.ModuleItem], errors: [RepairClubSDK.ErrorEntry]?)
-  case scanFailed(errors: [RepairClubSDK.ErrorEntry])
+  case modulesUpdate(modules: [RepairClubSDK.ModuleItem], scanEntry: RepairClubSDK.ScanEntry)
+  case scanSucceeded(modules: [RepairClubSDK.ModuleItem], scanEntry: RepairClubSDK.ScanEntry, errors: [RepairClubSDK.ErrorEntry]?)
+  case scanFailed(modules: [RepairClubSDK.ModuleItem], scanEntry: RepairClubSDK.ScanEntry, errors: [RepairClubSDK.ErrorEntry])
 }
 public enum OperationProgressUpdate {
   case operationStarted
