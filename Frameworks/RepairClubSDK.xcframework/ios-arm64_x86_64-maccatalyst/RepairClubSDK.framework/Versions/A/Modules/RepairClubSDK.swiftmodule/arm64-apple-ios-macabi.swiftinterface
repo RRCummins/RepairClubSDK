@@ -137,6 +137,9 @@ public enum ConnectionState : Swift.Equatable {
   public var succeeded: Swift.Bool {
     get
   }
+  public var description: Swift.String {
+    get
+  }
 }
 public enum ConnectionStage : Swift.Equatable {
   case deviceHandshake
