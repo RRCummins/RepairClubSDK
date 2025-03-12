@@ -1369,6 +1369,8 @@ public enum SampleVehicle : Swift.String, Swift.Codable, Swift.CaseIterable {
   case infinityQX802019
   case infinityQ502022
   case chevroletCamaro2010
+  case buickEnvision2023
+  case chryslerPacifica2021
   public var description: Swift.String {
     get
   }
@@ -1424,6 +1426,25 @@ public enum VehicleConnectionState : Swift.Codable {
     get
   }
   public init(from decoder: any Swift.Decoder) throws
+}
+public enum BluetoothStatus : Swift.String, Swift.Codable {
+  case unknown
+  case poweredOff
+  case poweredOn
+  case unsupported
+  case unauthorized
+  case resetting
+  public var isAvailable: Swift.Bool {
+    get
+  }
+  public var icon: Swift.String {
+    get
+  }
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
 }
 public struct SupportTask {
   public enum SupportTaskType {
@@ -1994,6 +2015,7 @@ extension RepairClubSDK.ResponseStatus {
   final public func currentDevice() -> RepairClubSDK.DeviceItem?
   final public func registerDeviceConnectionState(changes completionHandler: @escaping ((RepairClubSDK.DeviceConnectionState) -> Swift.Void))
   final public func registerVehicleConnectionState(changes completionHandler: @escaping ((RepairClubSDK.VehicleConnectionState) -> Swift.Void))
+  final public func registerBluetoothStatus(changes completionHandler: @escaping ((RepairClubSDK.BluetoothStatus) -> Swift.Void))
   final public func userWillEnterManualVehicleMode()
   final public func stopScanningForDevices()
   final public func subscribeToSDKErrors(callback completionHandler: @escaping ((RepairClubSDK.Result<[RepairClubSDK.ErrorEntry], any Swift.Error>) -> Swift.Void))
@@ -2344,6 +2366,9 @@ extension RepairClubSDK.DeviceConnectionState : Swift.Equatable {}
 extension RepairClubSDK.DeviceConnectionState : Swift.Hashable {}
 extension RepairClubSDK.VehicleConnectionState : Swift.Equatable {}
 extension RepairClubSDK.VehicleConnectionState : Swift.Hashable {}
+extension RepairClubSDK.BluetoothStatus : Swift.Equatable {}
+extension RepairClubSDK.BluetoothStatus : Swift.Hashable {}
+extension RepairClubSDK.BluetoothStatus : Swift.RawRepresentable {}
 extension RepairClubSDK.SupportTask.SupportTaskType : Swift.Equatable {}
 extension RepairClubSDK.SupportTask.SupportTaskType : Swift.Hashable {}
 extension RepairClubSDK.TechTip.Quality : Swift.Equatable {}
