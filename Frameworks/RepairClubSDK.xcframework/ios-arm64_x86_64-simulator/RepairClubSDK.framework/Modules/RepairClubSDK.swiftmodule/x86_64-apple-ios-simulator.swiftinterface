@@ -159,6 +159,34 @@ public enum ConnectionStage : Swift.Equatable {
     get
   }
 }
+public class TestingDataManager {
+  public init()
+  public func setOffset(_ value: Swift.Int)
+  public func setDeviceInfo(_ value: Swift.String)
+  public func setSessionId(_ value: Swift.String)
+  public func setBleOn(_ value: Swift.Bool)
+  public func setConnected(_ value: Swift.Bool)
+  public func setEncryption(_ value: Swift.Bool)
+  public func setBus(_ value: Swift.Bool)
+  public func setSP(_ value: Swift.Bool, count: Swift.Int? = nil)
+  public func incrementSPCount()
+  public func setSM(_ value: Swift.Bool, count: Swift.Int? = nil)
+  public func incrementSMCount()
+  public func setReadiness(_ value: Swift.Bool)
+  public func setFreezeFrameReceived(_ value: Swift.Bool, count: Swift.Int? = nil)
+  public func incrementFreezeFrameCount()
+  public func setMode06Received(_ value: Swift.Bool, count: Swift.Int? = nil)
+  public func incrementMode06Count()
+  public func setVehicleDecoded(_ value: Swift.Bool)
+  public func setVehicleConfig(_ value: Swift.Bool)
+  public func setLiveDataReceived(_ value: Swift.Bool, count: Swift.Int? = nil)
+  public func incrementLiveDataCount()
+  public func setClearSent(_ value: Swift.Bool)
+  public func getAllData() -> [Swift.String : Any]
+  public func resetAllData()
+  public func exportAsCSV() -> Swift.String
+  @objc deinit
+}
 public enum AdvancedOperationType : Swift.String, Swift.Codable, Swift.Sendable {
   case command, request, unknown
   public init?(rawValue: Swift.String)
@@ -1353,7 +1381,7 @@ public struct Mode6Item : Swift.Codable, Swift.Identifiable, Swift.Hashable {
 }
 public enum SampleVehicle : Swift.String, Swift.Codable, Swift.CaseIterable {
   case none
-  case toyotaSienna2011
+  case toyotaHighlander2013
   case volkswagenJetta2013
   case bmw435i2015
   case bmw228i2021
@@ -1371,6 +1399,7 @@ public enum SampleVehicle : Swift.String, Swift.Codable, Swift.CaseIterable {
   case chevroletCamaro2010
   case buickEnvision2023
   case chryslerPacifica2021
+  case subaruCrosstrek2024
   public var description: Swift.String {
     get
   }
@@ -1602,6 +1631,7 @@ public enum ConnectionCommands : Swift.String, Swift.CaseIterable {
   case endDataSessionDescription
   case error
   case endSession
+  case freezeFrame
   case firmware
   case genericCodes
   case keepAlive
@@ -2018,6 +2048,9 @@ extension RepairClubSDK.ResponseStatus {
   final public func registerBluetoothStatus(changes completionHandler: @escaping ((RepairClubSDK.BluetoothStatus) -> Swift.Void))
   final public func userWillEnterManualVehicleMode()
   final public func stopScanningForDevices()
+  final public func retryDecodingTheVIN()
+  final public func retryTheVehicleConfig()
+  final public func retryBusSync(completion: @escaping (Swift.Bool, (any Swift.Error)?) -> Swift.Void) -> Swift.Bool
   final public func subscribeToSDKErrors(callback completionHandler: @escaping ((RepairClubSDK.Result<[RepairClubSDK.ErrorEntry], any Swift.Error>) -> Swift.Void))
   final public func subscribeToLatestError(callback completionHandler: @escaping ((RepairClubSDK.Result<RepairClubSDK.ErrorEntry, any Swift.Error>) -> Swift.Void))
   final public func registerVIN(callback completionHandler: @escaping ((RepairClubSDK.Result<Swift.String, any Swift.Error>) -> Swift.Void))
