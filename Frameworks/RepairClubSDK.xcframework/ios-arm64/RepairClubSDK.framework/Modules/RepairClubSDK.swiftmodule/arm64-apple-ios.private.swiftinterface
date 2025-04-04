@@ -1400,6 +1400,8 @@ public enum SampleVehicle : Swift.String, Swift.Codable, Swift.CaseIterable {
   case buickEnvision2023
   case chryslerPacifica2021
   case subaruCrosstrek2024
+  case toyotaCamry2011
+  case chevroletSilverado2021
   public var description: Swift.String {
     get
   }
@@ -1987,10 +1989,11 @@ public enum Result<Success, Failure> where Failure : Swift.Error {
 extension RepairClubSDK.Result {
   public func get() throws -> Success
 }
-public enum ResponseStatus : Swift.String, Swift.Codable, Swift.Equatable, Swift.Sendable {
+public enum ResponseStatus : Swift.String, Swift.Codable, Swift.Equatable, Swift.Sendable, Swift.Hashable {
   case responded
-  case didNotRespond
   case awaitingDecode
+  case nrcResponse
+  case didNotRespond
   case unknown
   public init?(rawValue: Swift.String)
   public typealias RawValue = Swift.String
@@ -2417,7 +2420,6 @@ extension RepairClubSDK.DeviceDataMode : Swift.Equatable {}
 extension RepairClubSDK.DeviceDataMode : Swift.Hashable {}
 extension RepairClubSDK.TestRunResult : Swift.Equatable {}
 extension RepairClubSDK.TestRunResult : Swift.Hashable {}
-extension RepairClubSDK.ResponseStatus : Swift.Hashable {}
 extension RepairClubSDK.ResponseStatus : Swift.RawRepresentable {}
 extension RepairClubSDK.RepairClubManager.CacheType : Swift.Equatable {}
 extension RepairClubSDK.RepairClubManager.CacheType : Swift.Hashable {}
