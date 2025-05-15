@@ -247,6 +247,8 @@ public enum BusType : Swift.String, Swift.Codable, Swift.Sendable {
   case J1850_VPW
   case J1850_PWM
   case J1708
+  case FORD_FORCE_CAN1
+  case H99B
   case unknown
   public init(string: Swift.String) throws
   public var deviceRepresentation: Swift.String {
@@ -1403,6 +1405,7 @@ public enum SampleVehicle : Swift.String, Swift.Codable, Swift.CaseIterable {
   case toyotaCamry2011
   case chevroletSilverado2021
   case dodgeJourney2017
+  case cadillacEscalade2021
   public var description: Swift.String {
     get
   }
@@ -1548,9 +1551,26 @@ public struct dtcDetailResult : Swift.Codable, Swift.Identifiable {
   public var id: Swift.String
   public var ecuName: Swift.String?
   public var codes: [RepairClubSDK.DtcDetailResultCode]
-  public var techTipsErrors: [Swift.String]
+  public var techTipsErrors: [RepairClubSDK.TechTipError]
   public typealias ID = Swift.String
   public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+public struct TechTipError : Swift.Codable, Swift.Identifiable, Swift.Hashable {
+  public var id: Foundation.UUID
+  public var status: Swift.String
+  public var errorCode: Swift.String
+  public var httpResponseCode: Swift.Int
+  public var message: Swift.String
+  public var timestamp: Swift.String
+  public var details: [Swift.String]
+  public func hash(into hasher: inout Swift.Hasher)
+  public static func == (a: RepairClubSDK.TechTipError, b: RepairClubSDK.TechTipError) -> Swift.Bool
+  public typealias ID = Foundation.UUID
+  public func encode(to encoder: any Swift.Encoder) throws
+  public var hashValue: Swift.Int {
+    get
+  }
   public init(from decoder: any Swift.Decoder) throws
 }
 public struct DtcDetailResultCode : Swift.Codable {
@@ -2040,6 +2060,7 @@ extension RepairClubSDK.ResponseStatus {
     get
   }
   final public func configureSDK(tokenString: Swift.String, appName: Swift.String, appVersion: Swift.String, userID: Swift.String)
+  final public func configureSdkUser(userID: Swift.String)
   final public func updateApp(state: RepairClubSDK.AppForegroundState)
   final public func returnDevices(_ completionHandler: @escaping ((RepairClubSDK.Result<[RepairClubSDK.DeviceItem], any Swift.Error>) -> Swift.Void))
   final public func connectToDevice(peripheral: CoreBluetooth.CBPeripheral, _ connectionHandler: @escaping ((RepairClubSDK.ConnectionEntry, RepairClubSDK.ConnectionStage, RepairClubSDK.ConnectionState) -> Swift.Void))
@@ -2075,9 +2096,9 @@ extension RepairClubSDK.ResponseStatus {
   final public func subscribeToMonitors(_ completionHandler: @escaping ((RepairClubSDK.Result<[RepairClubSDK.ValueMonitor], any Swift.Error>) -> Swift.Void))
   final public func subscribeToMode06Monitors(_ completionHandler: @escaping ((RepairClubSDK.Result<[RepairClubSDK.ValueMonitor], any Swift.Error>) -> Swift.Void))
   final public func subscribeToMode06SupportedMonitors(_ completionHandler: @escaping ((RepairClubSDK.Result<[Swift.String], any Swift.Error>) -> Swift.Void))
-  final public func requestMonitors(_ sparkVehicle: Swift.Bool = true)
+  final public func requestReadinessMonitors(continuous: Swift.Bool = false)
   final public func requestMode06Monitors(shouldLoop: Swift.Bool = true)
-  final public func requestReadinessMonitors(shouldLoop: Swift.Bool = false, reqType: Swift.Int = 5)
+  final public func requestReadinessMonitors(shouldLoop: Swift.Bool = false, reqType: Swift.Int = 3)
   final public func startRequestMonitorsTimer()
   final public func endRequestMonitorsTimer()
   final public func registerMilChange(callback completionHandler: @escaping ((RepairClubSDK.Result<Swift.Bool, any Swift.Error>) -> Swift.Void))
@@ -2087,6 +2108,7 @@ extension RepairClubSDK.ResponseStatus {
   final public func startTroubleCodeScan(advancedScan: Swift.Bool = false, progressHandler: @escaping (RepairClubSDK.ScanProgressUpdate) -> Swift.Void)
   final public func startExtendedTroubleCodeScan(progressHandler: @escaping (RepairClubSDK.ScanProgressUpdate) -> Swift.Void)
   final public func stopTroubleCodeScan()
+  final public func pvcop(input: Swift.Int, progressHandler: @escaping (RepairClubSDK.ScanProgressUpdate) -> Swift.Void)
   final public func fetchDTCDescription(for code: Swift.String, on vehicle: RepairClubSDK.VehicleEntry) async -> RepairClubSDK.Result<RepairClubSDK.DTCResult?, any Swift.Error>
   final public func fetchDTCDescription(for code: Swift.String, on vehicle: RepairClubSDK.VehicleEntry, completion: @escaping (RepairClubSDK.Result<RepairClubSDK.DTCResult, any Swift.Error>) -> Swift.Void)
   final public func requestVinDecode(for vin: Swift.String) async throws -> RepairClubSDK.VINResult
