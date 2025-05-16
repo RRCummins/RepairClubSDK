@@ -1,7 +1,7 @@
 // swift-interface-format-version: 1.0
-// swift-compiler-version: Apple Swift version 6.0.3 effective-5.10 (swiftlang-6.0.3.1.10 clang-1600.0.30.1)
-// swift-module-flags: -target arm64-apple-ios15.5-macabi -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -enable-bare-slash-regex -module-name RepairClubSDK
-// swift-module-flags-ignorable: -no-verify-emitted-module-interface
+// swift-compiler-version: Apple Swift version 6.1 effective-5.10 (swiftlang-6.1.0.110.21 clang-1700.0.13.3)
+// swift-module-flags: -target arm64-apple-ios15.5-macabi -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -enable-experimental-feature DebugDescriptionMacro -enable-bare-slash-regex -module-name RepairClubSDK
+// swift-module-flags-ignorable: -no-verify-emitted-module-interface -interface-compiler-version 6.1
 import Combine
 import CommonCrypto
 import CoreBluetooth
@@ -22,6 +22,7 @@ public struct ScanEntry : Swift.Codable, Swift.Identifiable, Swift.Hashable, Swi
   public var id: Foundation.UUID
   public var vehicle: RepairClubSDK.VehicleEntry
   public var modules: [RepairClubSDK.ModuleItem]
+  public var scanType: RepairClubSDK.ScanType
   public var date: Foundation.Date
   public var progress: Swift.Double
   public var started: Swift.Bool
@@ -108,6 +109,7 @@ public struct VehicleInfoRequest {
     case accessLocked
     case vehicleInfoNotFound
     case serverUnavailable
+    case configDownloadFailed
     public static func == (a: RepairClubSDK.VehicleInfoRequest.Reason, b: RepairClubSDK.VehicleInfoRequest.Reason) -> Swift.Bool
     public func hash(into hasher: inout Swift.Hasher)
     public var hashValue: Swift.Int {
@@ -153,8 +155,8 @@ public enum ConnectionStage : Swift.Equatable {
   case supportedPIDsReceived
   case supportedMIDsReceived
   case odometerReceived
-  public func hash(into hasher: inout Swift.Hasher)
   public static func == (a: RepairClubSDK.ConnectionStage, b: RepairClubSDK.ConnectionStage) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
   public var hashValue: Swift.Int {
     get
   }
@@ -341,9 +343,9 @@ public struct PidItem : Swift.Codable, Swift.Identifiable, Swift.Hashable, Swift
   public static func < (lhs: RepairClubSDK.PidItem, rhs: RepairClubSDK.PidItem) -> Swift.Bool
   public func convertedUnit(shouldConvert: Swift.Bool) -> Swift.String
   public func convertedValue(shouldConvert: Swift.Bool) -> Swift.Double
-  public func hash(into hasher: inout Swift.Hasher)
   public typealias ID = Foundation.UUID
   public func encode(to encoder: any Swift.Encoder) throws
+  public func hash(into hasher: inout Swift.Hasher)
   public var hashValue: Swift.Int {
     get
   }
@@ -442,6 +444,7 @@ extension RepairClubSDK.VehicleEntry {
   public static var example5: RepairClubSDK.VehicleEntry
   public static var example6: RepairClubSDK.VehicleEntry
   public static var exampleVehicles: [RepairClubSDK.VehicleEntry]
+  public static var emptyVehicle: RepairClubSDK.VehicleEntry
 }
 public struct VehicleDataProperty : Swift.Hashable, Swift.Identifiable, RepairClubSDK.KeyValueable {
   public var id: Foundation.UUID
@@ -451,9 +454,9 @@ public struct VehicleDataProperty : Swift.Hashable, Swift.Identifiable, RepairCl
   public var message: Swift.String {
     get
   }
-  public func hash(into hasher: inout Swift.Hasher)
   public static func == (a: RepairClubSDK.VehicleDataProperty, b: RepairClubSDK.VehicleDataProperty) -> Swift.Bool
   public typealias ID = Foundation.UUID
+  public func hash(into hasher: inout Swift.Hasher)
   public var hashValue: Swift.Int {
     get
   }
@@ -555,6 +558,7 @@ public enum CommonError : Swift.Error, Swift.Codable {
   case missingSession(RepairClubSDK.ErrorLevel)
   case missingConfig(RepairClubSDK.ErrorLevel)
   case missingVehicleEntry(RepairClubSDK.ErrorLevel)
+  case invalidVehicleData(RepairClubSDK.ErrorLevel)
   case expiredToken(RepairClubSDK.ErrorLevel)
   case authenticationFailed(RepairClubSDK.ErrorLevel)
   case authenticationFaileduserNotFound(RepairClubSDK.ErrorLevel)
@@ -778,10 +782,10 @@ public struct VehicleSafetyResult : Swift.Codable, Swift.Hashable, Swift.Identif
   public var VehicleId: Swift.Int
   public func name() -> Swift.String
   public func properties() -> [RepairClubSDK.VehicleDataProperty]
-  public func hash(into hasher: inout Swift.Hasher)
   public static func == (a: RepairClubSDK.VehicleSafetyResult, b: RepairClubSDK.VehicleSafetyResult) -> Swift.Bool
   public typealias ID = Foundation.UUID
   public func encode(to encoder: any Swift.Encoder) throws
+  public func hash(into hasher: inout Swift.Hasher)
   public var hashValue: Swift.Int {
     get
   }
@@ -817,10 +821,10 @@ public struct VehicleRecallResult : Swift.Codable, Swift.Hashable, Swift.Identif
   }
   public func name() -> Swift.String
   public func properties() -> [RepairClubSDK.VehicleDataProperty]
-  public func hash(into hasher: inout Swift.Hasher)
   public static func == (a: RepairClubSDK.VehicleRecallResult, b: RepairClubSDK.VehicleRecallResult) -> Swift.Bool
   public typealias ID = Foundation.UUID
   public func encode(to encoder: any Swift.Encoder) throws
+  public func hash(into hasher: inout Swift.Hasher)
   public var hashValue: Swift.Int {
     get
   }
@@ -1065,9 +1069,9 @@ extension RepairClubSDK.DeviceInfoLog : Swift.Equatable {
   public static func == (lhs: RepairClubSDK.DeviceInfoLog, rhs: RepairClubSDK.DeviceInfoLog) -> Swift.Bool
 }
 public struct StatusUpdate : Swift.Hashable, Swift.Codable {
-  public func hash(into hasher: inout Swift.Hasher)
   public static func == (a: RepairClubSDK.StatusUpdate, b: RepairClubSDK.StatusUpdate) -> Swift.Bool
   public func encode(to encoder: any Swift.Encoder) throws
+  public func hash(into hasher: inout Swift.Hasher)
   public var hashValue: Swift.Int {
     get
   }
@@ -1295,12 +1299,15 @@ extension RepairClubSDK.Status {
     get
   }
 }
-public enum ScanType : Swift.String {
+public enum ScanType : Swift.String, Swift.Codable, Swift.Sendable {
   case generic
   case limited
   case advanced
   case extended
   case unknown
+  public var labelString: Swift.String {
+    get
+  }
   public init?(rawValue: Swift.String)
   public typealias RawValue = Swift.String
   public var rawValue: Swift.String {
@@ -1372,10 +1379,10 @@ public struct Mode6Item : Swift.Codable, Swift.Identifiable, Swift.Hashable {
   public var min: Swift.Double
   public var max: Swift.Double
   public var unit: Swift.String
-  public func hash(into hasher: inout Swift.Hasher)
   public static func == (a: RepairClubSDK.Mode6Item, b: RepairClubSDK.Mode6Item) -> Swift.Bool
   public typealias ID = Foundation.UUID
   public func encode(to encoder: any Swift.Encoder) throws
+  public func hash(into hasher: inout Swift.Hasher)
   public var hashValue: Swift.Int {
     get
   }
@@ -1438,8 +1445,8 @@ public enum DeviceConnectionState : Swift.Codable {
   case backgroundConnected
   case unknown
   public static func == (a: RepairClubSDK.DeviceConnectionState, b: RepairClubSDK.DeviceConnectionState) -> Swift.Bool
-  public func hash(into hasher: inout Swift.Hasher)
   public func encode(to encoder: any Swift.Encoder) throws
+  public func hash(into hasher: inout Swift.Hasher)
   public var hashValue: Swift.Int {
     get
   }
@@ -1455,8 +1462,8 @@ public enum VehicleConnectionState : Swift.Codable {
   case error
   case unknown
   public static func == (a: RepairClubSDK.VehicleConnectionState, b: RepairClubSDK.VehicleConnectionState) -> Swift.Bool
-  public func hash(into hasher: inout Swift.Hasher)
   public func encode(to encoder: any Swift.Encoder) throws
+  public func hash(into hasher: inout Swift.Hasher)
   public var hashValue: Swift.Int {
     get
   }
@@ -1511,10 +1518,10 @@ public struct TechTip : Swift.Codable, Swift.Identifiable, Swift.Hashable, Swift
   public var displayText: Swift.String {
     get
   }
-  public func hash(into hasher: inout Swift.Hasher)
   public static func == (a: RepairClubSDK.TechTip, b: RepairClubSDK.TechTip) -> Swift.Bool
   public typealias ID = Foundation.UUID
   public func encode(to encoder: any Swift.Encoder) throws
+  public func hash(into hasher: inout Swift.Hasher)
   public var hashValue: Swift.Int {
     get
   }
@@ -1564,10 +1571,10 @@ public struct TechTipError : Swift.Codable, Swift.Identifiable, Swift.Hashable {
   public var message: Swift.String
   public var timestamp: Swift.String
   public var details: [Swift.String]
-  public func hash(into hasher: inout Swift.Hasher)
   public static func == (a: RepairClubSDK.TechTipError, b: RepairClubSDK.TechTipError) -> Swift.Bool
   public typealias ID = Foundation.UUID
   public func encode(to encoder: any Swift.Encoder) throws
+  public func hash(into hasher: inout Swift.Hasher)
   public var hashValue: Swift.Int {
     get
   }
@@ -1589,10 +1596,10 @@ public struct TechTipsSection : Swift.Hashable, Swift.Identifiable, Swift.Codabl
   public var quality: RepairClubSDK.TechTip.Quality
   public var techTips: [RepairClubSDK.TechTip]
   public init(id: Foundation.UUID = UUID(), name: Swift.String, quality: RepairClubSDK.TechTip.Quality, techTips: [RepairClubSDK.TechTip])
-  public func hash(into hasher: inout Swift.Hasher)
   public static func == (a: RepairClubSDK.TechTipsSection, b: RepairClubSDK.TechTipsSection) -> Swift.Bool
   public typealias ID = Foundation.UUID
   public func encode(to encoder: any Swift.Encoder) throws
+  public func hash(into hasher: inout Swift.Hasher)
   public var hashValue: Swift.Int {
     get
   }
@@ -1933,9 +1940,9 @@ extension RepairClubSDK.LiveDataSource {
 }
 public enum ConvertableUnits : Swift.Codable, Swift.Hashable, Swift.Sendable {
   case mph(Swift.Double)
-  public func hash(into hasher: inout Swift.Hasher)
   public static func == (a: RepairClubSDK.ConvertableUnits, b: RepairClubSDK.ConvertableUnits) -> Swift.Bool
   public func encode(to encoder: any Swift.Encoder) throws
+  public func hash(into hasher: inout Swift.Hasher)
   public var hashValue: Swift.Int {
     get
   }
@@ -1980,8 +1987,8 @@ public enum TestRunResult : Swift.Codable {
     get
   }
   public static func == (a: RepairClubSDK.TestRunResult, b: RepairClubSDK.TestRunResult) -> Swift.Bool
-  public func hash(into hasher: inout Swift.Hasher)
   public func encode(to encoder: any Swift.Encoder) throws
+  public func hash(into hasher: inout Swift.Hasher)
   public var hashValue: Swift.Int {
     get
   }
@@ -2062,30 +2069,30 @@ extension RepairClubSDK.ResponseStatus {
   final public func configureSDK(tokenString: Swift.String, appName: Swift.String, appVersion: Swift.String, userID: Swift.String)
   final public func configureSdkUser(userID: Swift.String)
   final public func updateApp(state: RepairClubSDK.AppForegroundState)
-  final public func returnDevices(_ completionHandler: @escaping ((RepairClubSDK.Result<[RepairClubSDK.DeviceItem], any Swift.Error>) -> Swift.Void))
-  final public func connectToDevice(peripheral: CoreBluetooth.CBPeripheral, _ connectionHandler: @escaping ((RepairClubSDK.ConnectionEntry, RepairClubSDK.ConnectionStage, RepairClubSDK.ConnectionState) -> Swift.Void))
-  final public func subscribeToDisconnections(completionHandler: @escaping (() -> Swift.Void))
-  final public func reconnectToPeripheral(with peripheralID: Foundation.UUID, _ completionHandler: @escaping ((RepairClubSDK.Result<CoreBluetooth.CBPeripheral?, any Swift.Error>) -> Swift.Void))
+  final public func returnDevices(_ completionHandler: @escaping (RepairClubSDK.Result<[RepairClubSDK.DeviceItem], any Swift.Error>) -> Swift.Void)
+  final public func connectToDevice(peripheral: CoreBluetooth.CBPeripheral, _ connectionHandler: @escaping (RepairClubSDK.ConnectionEntry, RepairClubSDK.ConnectionStage, RepairClubSDK.ConnectionState) -> Swift.Void)
+  final public func subscribeToDisconnections(completionHandler: @escaping () -> Swift.Void)
+  final public func reconnectToPeripheral(with peripheralID: Foundation.UUID, _ completionHandler: @escaping (RepairClubSDK.Result<CoreBluetooth.CBPeripheral?, any Swift.Error>) -> Swift.Void)
   final public func disconnectFromDevice() -> (Swift.Bool, (any Swift.Error)?)
   final public func currentDevice() -> RepairClubSDK.DeviceItem?
-  final public func registerDeviceConnectionState(changes completionHandler: @escaping ((RepairClubSDK.DeviceConnectionState) -> Swift.Void))
-  final public func registerVehicleConnectionState(changes completionHandler: @escaping ((RepairClubSDK.VehicleConnectionState) -> Swift.Void))
-  final public func registerBluetoothStatus(changes completionHandler: @escaping ((RepairClubSDK.BluetoothStatus) -> Swift.Void))
+  final public func registerDeviceConnectionState(changes completionHandler: @escaping (RepairClubSDK.DeviceConnectionState) -> Swift.Void)
+  final public func registerVehicleConnectionState(changes completionHandler: @escaping (RepairClubSDK.VehicleConnectionState) -> Swift.Void)
+  final public func registerBluetoothStatus(changes completionHandler: @escaping (RepairClubSDK.BluetoothStatus) -> Swift.Void)
   final public func userWillEnterManualVehicleMode()
   final public func stopScanningForDevices()
   final public func retryDecodingTheVIN()
   final public func retryTheVehicleConfig()
   final public func retryBusSync(completion: @escaping (Swift.Bool, (any Swift.Error)?) -> Swift.Void) -> Swift.Bool
-  final public func subscribeToSDKErrors(callback completionHandler: @escaping ((RepairClubSDK.Result<[RepairClubSDK.ErrorEntry], any Swift.Error>) -> Swift.Void))
-  final public func subscribeToLatestError(callback completionHandler: @escaping ((RepairClubSDK.Result<RepairClubSDK.ErrorEntry, any Swift.Error>) -> Swift.Void))
-  final public func registerVIN(callback completionHandler: @escaping ((RepairClubSDK.Result<Swift.String, any Swift.Error>) -> Swift.Void))
-  final public func registerVehicle(callback completionHandler: @escaping ((RepairClubSDK.Result<RepairClubSDK.VehicleEntry?, any Swift.Error>) -> Swift.Void))
+  final public func subscribeToSDKErrors(callback completionHandler: @escaping (RepairClubSDK.Result<[RepairClubSDK.ErrorEntry], any Swift.Error>) -> Swift.Void)
+  final public func subscribeToLatestError(callback completionHandler: @escaping (RepairClubSDK.Result<RepairClubSDK.ErrorEntry, any Swift.Error>) -> Swift.Void)
+  final public func registerVIN(callback completionHandler: @escaping (RepairClubSDK.Result<Swift.String, any Swift.Error>) -> Swift.Void)
+  final public func registerVehicle(callback completionHandler: @escaping (RepairClubSDK.Result<RepairClubSDK.VehicleEntry?, any Swift.Error>) -> Swift.Void)
   final public func supplyVehicleInformation(vin: Swift.String?, vehicleEntry: RepairClubSDK.VehicleEntry?)
   final public func getCurrentVehicleEntry() -> RepairClubSDK.VehicleEntry?
   final public func setCurrentVehicleToA(manual vehicle: RepairClubSDK.VehicleEntry)
   final public func requestVIN() -> RepairClubSDK.Result<Swift.String, any Swift.Error>
-  final public func subscribeToLiveStream(_ completionHandler: @escaping ((RepairClubSDK.Result<[Swift.String : RepairClubSDK.LiveFeedDatedEntry], any Swift.Error>) -> Swift.Void))
-  final public func subscribeToLiveDataRanges(_ completionHandler: @escaping ((RepairClubSDK.Result<(min: [Swift.String : Swift.Double], max: [Swift.String : Swift.Double]), any Swift.Error>) -> Swift.Void))
+  final public func subscribeToLiveStream(_ completionHandler: @escaping (RepairClubSDK.Result<[Swift.String : RepairClubSDK.LiveFeedDatedEntry], any Swift.Error>) -> Swift.Void)
+  final public func subscribeToLiveDataRanges(_ completionHandler: @escaping (RepairClubSDK.Result<(min: [Swift.String : Swift.Double], max: [Swift.String : Swift.Double]), any Swift.Error>) -> Swift.Void)
   final public func requestAllLiveDataSources() -> RepairClubSDK.Result<[RepairClubSDK.LiveDataSource], any Swift.Error>
   final public func requestAvailableLiveDataSources() -> RepairClubSDK.Result<[RepairClubSDK.LiveDataSource], any Swift.Error>
   final public func startLiveDataStream(with codes: [RepairClubSDK.LiveDataSource]) -> RepairClubSDK.Result<Swift.Bool, any Swift.Error>
@@ -2093,18 +2100,18 @@ extension RepairClubSDK.ResponseStatus {
   final public func currentLiveFeedCSV(countToKeep: Swift.Int = 1_000) -> RepairClubSDK.Result<Swift.String, any Swift.Error>
   final public func returnLiveFeedCSV(from feedEntries: [RepairClubSDK.LiveFeedDatedEntry], countToKeep: Swift.Int = 1_000) -> RepairClubSDK.Result<Swift.String, any Swift.Error>
   final public func requestDataPoint(pid: Swift.String, oldAndNew: Swift.Bool = false, callback: @escaping (Swift.String) -> Swift.Void)
-  final public func subscribeToMonitors(_ completionHandler: @escaping ((RepairClubSDK.Result<[RepairClubSDK.ValueMonitor], any Swift.Error>) -> Swift.Void))
-  final public func subscribeToMode06Monitors(_ completionHandler: @escaping ((RepairClubSDK.Result<[RepairClubSDK.ValueMonitor], any Swift.Error>) -> Swift.Void))
-  final public func subscribeToMode06SupportedMonitors(_ completionHandler: @escaping ((RepairClubSDK.Result<[Swift.String], any Swift.Error>) -> Swift.Void))
+  final public func subscribeToMonitors(_ completionHandler: @escaping (RepairClubSDK.Result<[RepairClubSDK.ValueMonitor], any Swift.Error>) -> Swift.Void)
+  final public func subscribeToMode06Monitors(_ completionHandler: @escaping (RepairClubSDK.Result<[RepairClubSDK.ValueMonitor], any Swift.Error>) -> Swift.Void)
+  final public func subscribeToMode06SupportedMonitors(_ completionHandler: @escaping (RepairClubSDK.Result<[Swift.String], any Swift.Error>) -> Swift.Void)
   final public func requestReadinessMonitors(continuous: Swift.Bool = false)
   final public func requestMode06Monitors(shouldLoop: Swift.Bool = true)
   final public func requestReadinessMonitors(shouldLoop: Swift.Bool = false, reqType: Swift.Int = 3)
   final public func startRequestMonitorsTimer()
   final public func endRequestMonitorsTimer()
-  final public func registerMilChange(callback completionHandler: @escaping ((RepairClubSDK.Result<Swift.Bool, any Swift.Error>) -> Swift.Void))
+  final public func registerMilChange(callback completionHandler: @escaping (RepairClubSDK.Result<Swift.Bool, any Swift.Error>) -> Swift.Void)
   final public func requestMilStatus() -> RepairClubSDK.Result<Swift.Bool, any Swift.Error>
-  final public func requestFreezeFrameFor(code: RepairClubSDK.TroubleCodeEntry, scanEntry: RepairClubSDK.ScanEntry, callback completionHandler: @escaping ((RepairClubSDK.Result<[RepairClubSDK.ValueMonitor], RepairClubSDK.CommonError>) -> Swift.Void))
-  final public func requestFreezeFrameValuesFor(code: RepairClubSDK.TroubleCodeEntry, scanEntry: RepairClubSDK.ScanEntry, valueCompletionHandler: @escaping ((RepairClubSDK.Result<[Swift.String : Swift.Double], RepairClubSDK.CommonError>) -> Swift.Void))
+  final public func requestFreezeFrameFor(code: RepairClubSDK.TroubleCodeEntry, scanEntry: RepairClubSDK.ScanEntry, callback completionHandler: @escaping (RepairClubSDK.Result<[RepairClubSDK.ValueMonitor], RepairClubSDK.CommonError>) -> Swift.Void)
+  final public func requestFreezeFrameValuesFor(code: RepairClubSDK.TroubleCodeEntry, scanEntry: RepairClubSDK.ScanEntry, valueCompletionHandler: @escaping (RepairClubSDK.Result<[Swift.String : Swift.Double], RepairClubSDK.CommonError>) -> Swift.Void)
   final public func startTroubleCodeScan(advancedScan: Swift.Bool = false, progressHandler: @escaping (RepairClubSDK.ScanProgressUpdate) -> Swift.Void)
   final public func startExtendedTroubleCodeScan(progressHandler: @escaping (RepairClubSDK.ScanProgressUpdate) -> Swift.Void)
   final public func stopTroubleCodeScan()
@@ -2112,20 +2119,20 @@ extension RepairClubSDK.ResponseStatus {
   final public func fetchDTCDescription(for code: Swift.String, on vehicle: RepairClubSDK.VehicleEntry) async -> RepairClubSDK.Result<RepairClubSDK.DTCResult?, any Swift.Error>
   final public func fetchDTCDescription(for code: Swift.String, on vehicle: RepairClubSDK.VehicleEntry, completion: @escaping (RepairClubSDK.Result<RepairClubSDK.DTCResult, any Swift.Error>) -> Swift.Void)
   final public func requestVinDecode(for vin: Swift.String) async throws -> RepairClubSDK.VINResult
-  final public func requestVinDetailDecode(for vin: Swift.String, completionHandler: @escaping ((RepairClubSDK.Result<RepairClubSDK.VINDetailResult, any Swift.Error>) -> Swift.Void))
-  final public func requestVehicleID(for vehicle: RepairClubSDK.VehicleEntry, completionHandler: @escaping ((RepairClubSDK.Result<RepairClubSDK.VehicleIDResults, any Swift.Error>) -> Swift.Void))
-  final public func requestSafetyRatingsFor(id: Swift.String, completionHandler: @escaping ((RepairClubSDK.Result<RepairClubSDK.VehicleSafetyResult, any Swift.Error>) -> Swift.Void))
-  final public func requestMakeList(_ completionHandler: @escaping ((RepairClubSDK.Result<[RepairClubSDK.MakeResult], any Swift.Error>) -> Swift.Void))
-  final public func requestModels(for makeID: Swift.Int, completionHandler: @escaping ((RepairClubSDK.Result<[RepairClubSDK.ModelResult], any Swift.Error>) -> Swift.Void))
-  final public func requestRecalls(for vehicle: RepairClubSDK.VehicleEntry, completionHandler: @escaping ((RepairClubSDK.Result<RepairClubSDK.VehicleRecallResults, any Swift.Error>) -> Swift.Void))
-  final public func clearGenericCodes(completionHandler: @escaping ((RepairClubSDK.Result<Swift.Bool, any Swift.Error>) -> Swift.Void))
+  final public func requestVinDetailDecode(for vin: Swift.String, completionHandler: @escaping (RepairClubSDK.Result<RepairClubSDK.VINDetailResult, any Swift.Error>) -> Swift.Void)
+  final public func requestVehicleID(for vehicle: RepairClubSDK.VehicleEntry, completionHandler: @escaping (RepairClubSDK.Result<RepairClubSDK.VehicleIDResults, any Swift.Error>) -> Swift.Void)
+  final public func requestSafetyRatingsFor(id: Swift.String, completionHandler: @escaping (RepairClubSDK.Result<RepairClubSDK.VehicleSafetyResult, any Swift.Error>) -> Swift.Void)
+  final public func requestMakeList(_ completionHandler: @escaping (RepairClubSDK.Result<[RepairClubSDK.MakeResult], any Swift.Error>) -> Swift.Void)
+  final public func requestModels(for makeID: Swift.Int, completionHandler: @escaping (RepairClubSDK.Result<[RepairClubSDK.ModelResult], any Swift.Error>) -> Swift.Void)
+  final public func requestRecalls(for vehicle: RepairClubSDK.VehicleEntry, completionHandler: @escaping (RepairClubSDK.Result<RepairClubSDK.VehicleRecallResults, any Swift.Error>) -> Swift.Void)
+  final public func clearGenericCodes(completionHandler: @escaping (RepairClubSDK.Result<Swift.Bool, any Swift.Error>) -> Swift.Void)
   final public func clearAllCodes(progressHandler: @escaping (RepairClubSDK.OperationProgressUpdate) -> Swift.Void)
   final public func fetchAvailableServices(completion: @escaping (RepairClubSDK.ServiceOption) -> Swift.Void)
   final public func fetchAvailableServices() -> [RepairClubSDK.ServiceAdvanced]?
   final public func startService(service: RepairClubSDK.ServiceAdvanced, progressHandler: @escaping (RepairClubSDK.OperationProgressUpdate) -> Swift.Void)
   final public func returnFormData(for scan: RepairClubSDK.ScanEntry) -> RepairClubSDK.TesterFormData?
   final public func configureSDK(with configuration: RepairClubSDK.SDKConfiguration)
-  final public func returnDevInfo(with key: Swift.String, completionHandler: @escaping ((RepairClubSDK.Result<Any, any Swift.Error>) -> Swift.Void))
+  final public func returnDevInfo(with key: Swift.String, completionHandler: @escaping (RepairClubSDK.Result<Any, any Swift.Error>) -> Swift.Void)
   final public func setProcess(with key: Swift.String)
   final public func sendAdditionalDataRequests()
   final public func clearCache(type: RepairClubSDK.RepairClubManager.CacheType)
@@ -2144,17 +2151,17 @@ extension RepairClubSDK.ResponseStatus {
   final public func setUseDevServer(_ useNew: Swift.Int)
   final public func setSampleVehicleOnSim(_ vehicle: RepairClubSDK.SampleVehicle)
   final public func set(_ text: Swift.String)
-  final public func subscribeToFirmwareProgress(_ completionHandler: @escaping ((RepairClubSDK.FirmwareProgress) -> Swift.Void))
-  final public func startDeviceFirmwareUpdate(to version: Swift.String? = nil, reqReleaseLevel: RepairClubSDK.FirmwareReleaseType? = nil, progressCallback: @escaping ((Swift.Double) -> Swift.Void), completionCallback: @escaping ((RepairClubSDK.Result<Swift.Bool, any Swift.Error>) -> Swift.Void))
-  final public func cancelDeviceFirmwareUpdate(completionCallback: @escaping ((RepairClubSDK.Result<Swift.Bool, any Swift.Error>) -> Swift.Void))
+  final public func subscribeToFirmwareProgress(_ completionHandler: @escaping (RepairClubSDK.FirmwareProgress) -> Swift.Void)
+  final public func startDeviceFirmwareUpdate(to version: Swift.String? = nil, reqReleaseLevel: RepairClubSDK.FirmwareReleaseType? = nil, progressCallback: @escaping (Swift.Double) -> Swift.Void, completionCallback: @escaping (RepairClubSDK.Result<Swift.Bool, any Swift.Error>) -> Swift.Void)
+  final public func cancelDeviceFirmwareUpdate(completionCallback: @escaping (RepairClubSDK.Result<Swift.Bool, any Swift.Error>) -> Swift.Void)
   final public func startDeviceFirmwareUpdate(reqVersion: Swift.String? = nil, reqReleaseLevel: RepairClubSDK.FirmwareReleaseType? = nil)
   final public func stopDeviceFirmwareUpdate()
-  final public func subscribeToFirmwareVersionChanges(reqReleaseLevel: RepairClubSDK.FirmwareReleaseType? = nil, completionCallback: @escaping ((Swift.String, Swift.String) -> Swift.Void))
-  final public func getFirmwareVersions(reqReleaseLevel: RepairClubSDK.FirmwareReleaseType = .production, completion: @escaping ((Swift.String, Swift.String?, Swift.String?, Swift.String?) -> Swift.Void))
-  final public func getFirmwareVersionsWithNotes(reqReleaseLevel: RepairClubSDK.FirmwareReleaseType = .production, completion: @escaping ((Swift.String, RepairClubSDK.FirmwareVersionInfo?, RepairClubSDK.FirmwareVersionInfo?, RepairClubSDK.FirmwareVersionInfo?) -> Swift.Void))
+  final public func subscribeToFirmwareVersionChanges(reqReleaseLevel: RepairClubSDK.FirmwareReleaseType? = nil, completionCallback: @escaping (Swift.String, Swift.String) -> Swift.Void)
+  final public func getFirmwareVersions(reqReleaseLevel: RepairClubSDK.FirmwareReleaseType = .production, completion: @escaping (Swift.String, Swift.String?, Swift.String?, Swift.String?) -> Swift.Void)
+  final public func getFirmwareVersionsWithNotes(reqReleaseLevel: RepairClubSDK.FirmwareReleaseType = .production, completion: @escaping (Swift.String, RepairClubSDK.FirmwareVersionInfo?, RepairClubSDK.FirmwareVersionInfo?, RepairClubSDK.FirmwareVersionInfo?) -> Swift.Void)
   final public func getDeviceFirmwareVersion() -> RepairClubSDK.Result<Swift.String?, any Swift.Error>
   final public func getNewestAvailableFirmwareVersion() -> RepairClubSDK.Result<Swift.String?, any Swift.Error>
-  final public func startDemoMode(demoOn: Swift.Bool, _ connectionHandler: @escaping ((RepairClubSDK.ConnectionEntry, RepairClubSDK.ConnectionStage, RepairClubSDK.ConnectionState) -> Swift.Void))
+  final public func startDemoMode(demoOn: Swift.Bool, _ connectionHandler: @escaping (RepairClubSDK.ConnectionEntry, RepairClubSDK.ConnectionStage, RepairClubSDK.ConnectionState) -> Swift.Void)
   final public func stopDemoMode()
   final public func clearKeyCahe() async
   public typealias ObjectWillChangePublisher = Combine.ObservableObjectPublisher
@@ -2286,8 +2293,8 @@ public struct ValueMonitor : Swift.Identifiable, Swift.Codable, Swift.Hashable, 
 public enum MonitorType : Swift.Codable, Swift.Sendable {
   case continuous, nonContinuous, snapshot
   public static func == (a: RepairClubSDK.MonitorType, b: RepairClubSDK.MonitorType) -> Swift.Bool
-  public func hash(into hasher: inout Swift.Hasher)
   public func encode(to encoder: any Swift.Encoder) throws
+  public func hash(into hasher: inout Swift.Hasher)
   public var hashValue: Swift.Int {
     get
   }
@@ -2318,8 +2325,8 @@ public enum ModeType : Swift.Codable {
     get
   }
   public static func == (a: RepairClubSDK.ModeType, b: RepairClubSDK.ModeType) -> Swift.Bool
-  public func hash(into hasher: inout Swift.Hasher)
   public func encode(to encoder: any Swift.Encoder) throws
+  public func hash(into hasher: inout Swift.Hasher)
   public var hashValue: Swift.Int {
     get
   }
