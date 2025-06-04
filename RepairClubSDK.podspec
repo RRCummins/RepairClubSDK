@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "RepairClubSDK"
-  s.version      = "1.3.5"
+  s.version      = "1.3.7"
   s.summary      = "A framework for the RepairClub project"
   s.description  = <<-DESC
                    RepairClubSDK is a framework that provides functionalities for the RepairClub project.
@@ -8,7 +8,7 @@ Pod::Spec.new do |s|
                    DESC
   s.homepage     = "https://github.com/RRCummins/RepairClubSDK"
   s.author       = { "RRCummins" => "ryan@repairclub.pro" }
-  s.source       = { :git => "https://github.com/RRCummins/RepairClubSDK.git", :tag => "1.3.5" }
+  s.source       = { :git => "https://github.com/RRCummins/RepairClubSDK.git", :tag => "1.3.7" }
 
   s.license      = { :type => "Proprietary", :text => "All rights reserved. This framework is licensed only to authorized customers of RepairClub." }
 

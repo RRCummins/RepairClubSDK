@@ -18,6 +18,16 @@ import _StringProcessing
 import _SwiftConcurrencyShims
 import os
 import zlib
+public struct SDKLogger {
+  public init(subsystem: Swift.String, category: Swift.String)
+  public func internalDebug(_ message: @autoclosure () -> Swift.String, file: Swift.StaticString = #file, function: Swift.StaticString = #function, line: Swift.UInt = #line)
+  public func internalError(_ message: @autoclosure () -> Swift.String, file: Swift.StaticString = #file, function: Swift.StaticString = #function, line: Swift.UInt = #line)
+  public func info(_ message: Swift.String)
+  public func notice(_ message: Swift.String)
+  public func error(_ message: Swift.String)
+  public func fault(_ message: Swift.String)
+  public func debug(_ message: @autoclosure () -> Swift.String)
+}
 public struct ScanEntry : Swift.Codable, Swift.Identifiable, Swift.Hashable, Swift.Sendable {
   public var id: Foundation.UUID
   public var vehicle: RepairClubSDK.VehicleEntry
@@ -586,6 +596,22 @@ public enum CommonError : Swift.Error, Swift.Codable {
   public var description: Swift.String {
     get
   }
+}
+public struct VehicleData : Swift.Codable, Swift.Identifiable, Swift.Hashable, Swift.Sendable {
+  public var id: Foundation.UUID
+  public var vehicleEntry: RepairClubSDK.VehicleEntry
+  public var odometer: Swift.String?
+  public var vehiclePowertrainType: RepairClubSDK.VehiclePowertrainType?
+  public var batteryVoltage: Swift.String?
+  public var batteryVoltage2: Swift.String?
+  public static func == (a: RepairClubSDK.VehicleData, b: RepairClubSDK.VehicleData) -> Swift.Bool
+  public typealias ID = Foundation.UUID
+  public func encode(to encoder: any Swift.Encoder) throws
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+  public init(from decoder: any Swift.Decoder) throws
 }
 public struct TroubleCodeEntry : Swift.Codable, Swift.Identifiable, Swift.Hashable, Swift.Sendable {
   public var id: Swift.String
@@ -1285,6 +1311,10 @@ public struct OTAFirmwareUpdateLog : Swift.Identifiable, Swift.Codable {
 }
 extension RepairClubSDK.OTAFirmwareUpdateLog : Swift.Equatable {
   public static func == (lhs: RepairClubSDK.OTAFirmwareUpdateLog, rhs: RepairClubSDK.OTAFirmwareUpdateLog) -> Swift.Bool
+}
+extension RepairClubSDK.SessionLog {
+  public func calculateComponentHashes() -> [Swift.String : Swift.String]
+  public func componentTimestamps() -> [Swift.String : Swift.Int]
 }
 public enum Status : Swift.String, Swift.Codable, Swift.Sendable {
   case notStarted, started, ended, complete
