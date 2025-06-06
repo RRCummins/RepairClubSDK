@@ -328,7 +328,4 @@ class MyViewModel: ObservableObject {
 
 ---
 
-## License
-
-*Specify your license here (e.g., MIT, Apache 2.0).*
 
