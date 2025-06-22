@@ -1,7 +1,7 @@
 // swift-interface-format-version: 1.0
-// swift-compiler-version: Apple Swift version 6.1 effective-5.10 (swiftlang-6.1.0.110.21 clang-1700.0.13.3)
+// swift-compiler-version: Apple Swift version 6.1.2 effective-5.10 (swiftlang-6.1.2.1.2 clang-1700.0.13.5)
 // swift-module-flags: -target x86_64-apple-ios15.5-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -enable-experimental-feature DebugDescriptionMacro -enable-bare-slash-regex -module-name RepairClubSDK
-// swift-module-flags-ignorable: -no-verify-emitted-module-interface -interface-compiler-version 6.1
+// swift-module-flags-ignorable: -no-verify-emitted-module-interface -interface-compiler-version 6.1.2
 import Combine
 import CommonCrypto
 import CoreBluetooth
@@ -1443,6 +1443,8 @@ public enum SampleVehicle : Swift.String, Swift.Codable, Swift.CaseIterable {
   case chevroletSilverado2021
   case dodgeJourney2017
   case cadillacEscalade2021
+  case hondaAccord2010
+  case subaruImpreza2019
   public var description: Swift.String {
     get
   }
@@ -1676,6 +1678,7 @@ public enum ConnectionCommands : Swift.String, Swift.CaseIterable {
   case acknowledgement
   case advancedDataRequest
   case advancedDataResponse
+  case advancedDataWait
   case busDetail
   case busEstablish
   case busNumber

@@ -10,9 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.3.7-beta1] - 2025-06-06
+## [1.3.7-beta2] - 2025-06-22
 ### Added
 - Adds hashing to logs upload
+- Updates bus syncing to overwrite unused device bus slots
+- Adds Subaru sample data
 
 ### Fixed
 - Bug fix for Honda ISO support
