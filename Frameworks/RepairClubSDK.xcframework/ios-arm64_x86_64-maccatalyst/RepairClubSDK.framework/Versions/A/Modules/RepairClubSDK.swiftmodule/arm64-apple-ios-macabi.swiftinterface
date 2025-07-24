@@ -8,6 +8,7 @@ import CoreBluetooth
 import CoreLocation
 import CryptoKit
 import Foundation
+import OSLog
 @_exported import RepairClubSDK
 import Security
 import Swift
@@ -87,6 +88,10 @@ extension UIKit.UIViewController {
   }
   @objc deinit
 }
+public struct PidRecord : Swift.Codable {
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
 public struct DeviceNickname : Swift.Codable {
   public var id: Swift.String
   public var nickname: Swift.String
@@ -129,47 +134,6 @@ public struct VehicleInfoRequest {
   public let reason: RepairClubSDK.VehicleInfoRequest.Reason
   public let completion: ((Swift.String?) -> Swift.Void)?
   public init(reason: RepairClubSDK.VehicleInfoRequest.Reason, completion: ((Swift.String?) -> Swift.Void)? = nil)
-}
-public struct ConnectionEntry {
-  public var deviceFirmware: Swift.String?
-  public var deviceItem: RepairClubSDK.DeviceItem?
-  public var vin: Swift.String?
-  public var vehicleEntry: RepairClubSDK.VehicleEntry?
-  public var milOn: Swift.Bool?
-  public var bussesSyncedCount: Swift.Int
-  public var odometer: Swift.String?
-}
-public enum ConnectionState : Swift.Equatable {
-  case notStarted
-  case started
-  case completed
-  case failed(any Swift.Error)
-  case manuallyEntered
-  public static func == (lhs: RepairClubSDK.ConnectionState, rhs: RepairClubSDK.ConnectionState) -> Swift.Bool
-  public var succeeded: Swift.Bool {
-    get
-  }
-  public var description: Swift.String {
-    get
-  }
-}
-public enum ConnectionStage : Swift.Equatable {
-  case deviceHandshake
-  case mainBusFound
-  case vinReceived
-  case vehicleDecoded
-  case configDownloaded
-  case busSyncedToConfig
-  case milChecking
-  case readinessMonitors
-  case supportedPIDsReceived
-  case supportedMIDsReceived
-  case odometerReceived
-  public static func == (a: RepairClubSDK.ConnectionStage, b: RepairClubSDK.ConnectionStage) -> Swift.Bool
-  public func hash(into hasher: inout Swift.Hasher)
-  public var hashValue: Swift.Int {
-    get
-  }
 }
 public class TestingDataManager {
   public init()
@@ -1461,6 +1425,47 @@ public enum SampleVehicle : Swift.String, Swift.Codable, Swift.CaseIterable {
     get
   }
 }
+public enum ConnectionState : Swift.Equatable {
+  case notStarted
+  case started
+  case completed
+  case failed(any Swift.Error)
+  case manuallyEntered
+  public static func == (lhs: RepairClubSDK.ConnectionState, rhs: RepairClubSDK.ConnectionState) -> Swift.Bool
+  public var succeeded: Swift.Bool {
+    get
+  }
+  public var description: Swift.String {
+    get
+  }
+}
+public struct ConnectionEntry {
+  public var deviceFirmware: Swift.String?
+  public var deviceItem: RepairClubSDK.DeviceItem?
+  public var vin: Swift.String?
+  public var vehicleEntry: RepairClubSDK.VehicleEntry?
+  public var milOn: Swift.Bool?
+  public var bussesSyncedCount: Swift.Int
+  public var odometer: Swift.String?
+}
+public enum ConnectionStage : Swift.Equatable {
+  case deviceHandshake
+  case mainBusFound
+  case vinReceived
+  case vehicleDecoded
+  case configDownloaded
+  case busSyncedToConfig
+  case milChecking
+  case readinessMonitors
+  case supportedPIDsReceived
+  case supportedMIDsReceived
+  case odometerReceived
+  public static func == (a: RepairClubSDK.ConnectionStage, b: RepairClubSDK.ConnectionStage) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
 public enum DeviceConnectionState : Swift.Codable {
   case disconnected
   case connecting1
@@ -2039,10 +2044,6 @@ public struct DebuggingResources {
     get
   }
 }
-public struct PidRecord : Swift.Codable {
-  public func encode(to encoder: any Swift.Encoder) throws
-  public init(from decoder: any Swift.Decoder) throws
-}
 public enum Result<Success, Failure> where Failure : Swift.Error {
   case success(Success)
   case failure(Failure)
@@ -2138,9 +2139,10 @@ extension RepairClubSDK.ResponseStatus {
   final public func subscribeToMode06SupportedMonitors(_ completionHandler: @escaping (RepairClubSDK.Result<[Swift.String], any Swift.Error>) -> Swift.Void)
   final public func requestReadinessMonitors(continuous: Swift.Bool = false)
   final public func requestMode06Monitors(shouldLoop: Swift.Bool = true)
+  final public func endRequestMode06MonitorsTimer()
   final public func requestReadinessMonitors(shouldLoop: Swift.Bool = false, reqType: Swift.Int = 3)
-  final public func startRequestMonitorsTimer()
-  final public func endRequestMonitorsTimer()
+  final public func startRequestReadinessMonitorsTimer()
+  final public func endRequestReadinessMonitorsTimer()
   final public func registerMilChange(callback completionHandler: @escaping (RepairClubSDK.Result<Swift.Bool, any Swift.Error>) -> Swift.Void)
   final public func requestMilStatus() -> RepairClubSDK.Result<Swift.Bool, any Swift.Error>
   final public func requestFreezeFrameFor(code: RepairClubSDK.TroubleCodeEntry, scanEntry: RepairClubSDK.ScanEntry, callback completionHandler: @escaping (RepairClubSDK.Result<[RepairClubSDK.ValueMonitor], RepairClubSDK.CommonError>) -> Swift.Void)
@@ -2395,7 +2397,6 @@ extension Foundation.Data {
 }
 extension RepairClubSDK.VehicleInfoRequest.Reason : Swift.Equatable {}
 extension RepairClubSDK.VehicleInfoRequest.Reason : Swift.Hashable {}
-extension RepairClubSDK.ConnectionStage : Swift.Hashable {}
 extension RepairClubSDK.AdvancedOperationType : Swift.Equatable {}
 extension RepairClubSDK.AdvancedOperationType : Swift.Hashable {}
 extension RepairClubSDK.AdvancedOperationType : Swift.RawRepresentable {}
@@ -2461,6 +2462,7 @@ extension RepairClubSDK.StructeredLogAction : Swift.RawRepresentable {}
 extension RepairClubSDK.SampleVehicle : Swift.Equatable {}
 extension RepairClubSDK.SampleVehicle : Swift.Hashable {}
 extension RepairClubSDK.SampleVehicle : Swift.RawRepresentable {}
+extension RepairClubSDK.ConnectionStage : Swift.Hashable {}
 extension RepairClubSDK.DeviceConnectionState : Swift.Equatable {}
 extension RepairClubSDK.DeviceConnectionState : Swift.Hashable {}
 extension RepairClubSDK.VehicleConnectionState : Swift.Equatable {}
