@@ -1409,6 +1409,7 @@ public enum SampleVehicle : Swift.String, Swift.Codable, Swift.CaseIterable {
   case cadillacEscalade2021
   case hondaAccord2010
   case subaruImpreza2019
+  case volkswagenGolfGTI2022
   public var description: Swift.String {
     get
   }

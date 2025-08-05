@@ -10,9 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.4.1-beta1] - 2025-07-24
+## [1.4.1] - 2025-08-05
 ### Added
 - Added additional information to the narrative log
+- Adds YMM and VIN to narrative
+- Adds second generic codes req if needed
+- Adds support for firmware 2.022.08
 
 ### Fixed
 - Fixed a readiness monitor bug
