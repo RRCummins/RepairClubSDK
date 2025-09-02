@@ -10,6 +10,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.4] - 2025-09-02
+### Added
+- Added additional logging
+- Added generic DTC message logging
+- Improved scan narrative
+- Adds support for Mode $01 Dump
+
+### Fixed
+- Improved generic DTC reliability
+- Removed unneeded legacy re-establish during advanced scan
+- Fix for initial bus sync on legacy vehicles
+- Improved reliability of firmware updates
+
+---
+
 ## [1.4.1] - 2025-08-05
 ### Added
 - Added additional information to the narrative log

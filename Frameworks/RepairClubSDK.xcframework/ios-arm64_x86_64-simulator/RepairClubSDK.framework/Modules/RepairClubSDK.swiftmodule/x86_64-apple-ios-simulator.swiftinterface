@@ -164,7 +164,7 @@ public class TestingDataManager {
   @objc deinit
 }
 public enum AdvancedOperationType : Swift.String, Swift.Codable, Swift.Sendable {
-  case command, request, unknown
+  case command, direct, request, request_value, unknown
   public init?(rawValue: Swift.String)
   public typealias RawValue = Swift.String
   public var rawValue: Swift.String {
@@ -539,6 +539,7 @@ public enum CommonError : Swift.Error, Swift.Codable {
   case authenticationFailedIncorrectPassword(RepairClubSDK.ErrorLevel)
   case advancedScanNotFound(RepairClubSDK.ErrorLevel)
   case invalidToken(RepairClubSDK.ErrorLevel)
+  case invalidFirmware(RepairClubSDK.ErrorLevel)
   case noScanFound(RepairClubSDK.ErrorLevel)
   case noVINFound(RepairClubSDK.ErrorLevel)
   case VINTimeout(RepairClubSDK.ErrorLevel)
@@ -590,10 +591,10 @@ public struct TroubleCodeEntry : Swift.Codable, Swift.Identifiable, Swift.Hashab
   public var scanErrors: [RepairClubSDK.ErrorEntry]?
   public var detailStatus: RepairClubSDK.DetailStatus
   public init(code: Swift.String, description: Swift.String? = nil, detailStatus: RepairClubSDK.DetailStatus, errors: [RepairClubSDK.ErrorEntry]? = nil)
+  public init(code: Swift.String, symptomByte: Swift.String?, description: Swift.String? = nil, detailStatus: RepairClubSDK.DetailStatus, errors: [RepairClubSDK.ErrorEntry]? = nil)
   public init(code: Swift.String, symptomByte: Swift.String, description: Swift.String? = nil, detailStatus: RepairClubSDK.DetailStatus, symptomByteDescription: Swift.String?, errors: [RepairClubSDK.ErrorEntry]? = nil)
   public init(result: RepairClubSDK.DtcDetailResultCode, status: [RepairClubSDK.CodeStatus], symptomByte: Swift.String?, detailStatus: RepairClubSDK.DetailStatus, errors: [RepairClubSDK.ErrorEntry]? = nil)
   public init(result: RepairClubSDK.TechTipResponse, detailStatus: RepairClubSDK.DetailStatus, errors: [RepairClubSDK.ErrorEntry]? = nil)
-  public init(entry: RepairClubSDK.TroubleCodeEntry, result: RepairClubSDK.DTCResult, detailStatus: RepairClubSDK.DetailStatus, errors: [RepairClubSDK.ErrorEntry]? = nil)
   public init(code: Swift.String, statuses: [RepairClubSDK.CodeStatus] = [], data: Foundation.Data? = nil, description: Swift.String? = nil, techTips: [RepairClubSDK.TechTip] = [], errors: [RepairClubSDK.ErrorEntry]? = nil, detailStatus: RepairClubSDK.DetailStatus)
   public func hash(into hasher: inout Swift.Hasher)
   public static func == (lhs: RepairClubSDK.TroubleCodeEntry, rhs: RepairClubSDK.TroubleCodeEntry) -> Swift.Bool
@@ -639,9 +640,28 @@ public enum CodeStatus : Swift.String, Swift.Codable, Swift.Sendable {
   case permanent
   case history
   case warningLight
+  case testFailed
+  case testNotCompletedThisOperationCycle
+  case testFailedThisOperationCycle
+  case testNotCompletedSinceLastClear
+  public static func statusType(from string: Swift.String) -> RepairClubSDK.CodeStatus?
+  public var statusCategory: RepairClubSDK.CodeStatusCategory {
+    get
+  }
+  public var displayValue: Swift.String {
+    get
+  }
+  public var sortPriority: Swift.Int {
+    get
+  }
   public init?(rawValue: Swift.String)
   public typealias RawValue = Swift.String
   public var rawValue: Swift.String {
+    get
+  }
+}
+extension Swift.Sequence where Self.Element == RepairClubSDK.CodeStatus {
+  public var sortedByPriority: [RepairClubSDK.CodeStatus] {
     get
   }
 }
@@ -650,6 +670,15 @@ extension RepairClubSDK.CodeStatus : Swift.Identifiable {
     get
   }
   public typealias ID = Swift.String
+}
+public enum CodeStatusCategory {
+  case current
+  case history
+  public static func == (a: RepairClubSDK.CodeStatusCategory, b: RepairClubSDK.CodeStatusCategory) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
 }
 public enum ProcessedState : Swift.String, Swift.Codable {
   case initial, partial, complete
@@ -2132,6 +2161,7 @@ extension RepairClubSDK.ResponseStatus {
   final public func requestAvailableLiveDataSources() -> RepairClubSDK.Result<[RepairClubSDK.LiveDataSource], any Swift.Error>
   final public func startLiveDataStream(with codes: [RepairClubSDK.LiveDataSource]) -> RepairClubSDK.Result<Swift.Bool, any Swift.Error>
   final public func endLiveDataStream() -> Swift.Bool
+  final public func requestModeDump(mode: Swift.String) -> RepairClubSDK.Result<Swift.Bool, any Swift.Error>
   final public func currentLiveFeedCSV(countToKeep: Swift.Int = 1_000) -> RepairClubSDK.Result<Swift.String, any Swift.Error>
   final public func returnLiveFeedCSV(from feedEntries: [RepairClubSDK.LiveFeedDatedEntry], countToKeep: Swift.Int = 1_000) -> RepairClubSDK.Result<Swift.String, any Swift.Error>
   final public func requestDataPoint(pid: Swift.String, oldAndNew: Swift.Bool = false, callback: @escaping (Swift.String) -> Swift.Void)
@@ -2188,9 +2218,9 @@ extension RepairClubSDK.ResponseStatus {
   final public func setSampleVehicleOnSim(_ vehicle: RepairClubSDK.SampleVehicle)
   final public func set(_ text: Swift.String)
   final public func subscribeToFirmwareProgress(_ completionHandler: @escaping (RepairClubSDK.FirmwareProgress) -> Swift.Void)
-  final public func startDeviceFirmwareUpdate(to version: Swift.String? = nil, reqReleaseLevel: RepairClubSDK.FirmwareReleaseType? = nil, progressCallback: @escaping (Swift.Double) -> Swift.Void, completionCallback: @escaping (RepairClubSDK.Result<Swift.Bool, any Swift.Error>) -> Swift.Void)
+  final public func startDeviceFirmwareUpdate(to version: Swift.String? = nil, reqReleaseLevel: RepairClubSDK.FirmwareReleaseType? = nil, authKey: Swift.String? = nil, progressCallback: @escaping (Swift.Double) -> Swift.Void, completionCallback: @escaping (RepairClubSDK.Result<Swift.Bool, any Swift.Error>) -> Swift.Void)
   final public func cancelDeviceFirmwareUpdate(completionCallback: @escaping (RepairClubSDK.Result<Swift.Bool, any Swift.Error>) -> Swift.Void)
-  final public func startDeviceFirmwareUpdate(reqVersion: Swift.String? = nil, reqReleaseLevel: RepairClubSDK.FirmwareReleaseType? = nil)
+  final public func startDeviceFirmwareUpdate(reqVersion: Swift.String? = nil, reqReleaseLevel: RepairClubSDK.FirmwareReleaseType? = nil, authKey: Swift.String? = nil)
   final public func stopDeviceFirmwareUpdate()
   final public func subscribeToFirmwareVersionChanges(reqReleaseLevel: RepairClubSDK.FirmwareReleaseType? = nil, completionCallback: @escaping (Swift.String, Swift.String) -> Swift.Void)
   final public func getFirmwareVersions(reqReleaseLevel: RepairClubSDK.FirmwareReleaseType = .production, completion: @escaping (Swift.String, Swift.String?, Swift.String?, Swift.String?) -> Swift.Void)
@@ -2431,6 +2461,8 @@ extension RepairClubSDK.DTCType : Swift.RawRepresentable {}
 extension RepairClubSDK.CodeStatus : Swift.Equatable {}
 extension RepairClubSDK.CodeStatus : Swift.Hashable {}
 extension RepairClubSDK.CodeStatus : Swift.RawRepresentable {}
+extension RepairClubSDK.CodeStatusCategory : Swift.Equatable {}
+extension RepairClubSDK.CodeStatusCategory : Swift.Hashable {}
 extension RepairClubSDK.ProcessedState : Swift.Equatable {}
 extension RepairClubSDK.ProcessedState : Swift.Hashable {}
 extension RepairClubSDK.ProcessedState : Swift.RawRepresentable {}
