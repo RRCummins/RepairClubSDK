@@ -1,5 +1,3 @@
-# README.md
-
 # RepairClubSDK
 
 **RepairClubSDK** is a Swift Package Manager–ready framework that provides an easy-to-use interface (`RepairClubManager`) for discovering, connecting to, and interacting with Repair Club built devices over BLE. It exposes APIs for scanning devices, connecting/disconnecting, subscribing to events (VIN, vehicle data, live data, diagnostics), performing scans, retrieving DTC descriptions, and firmware updates.

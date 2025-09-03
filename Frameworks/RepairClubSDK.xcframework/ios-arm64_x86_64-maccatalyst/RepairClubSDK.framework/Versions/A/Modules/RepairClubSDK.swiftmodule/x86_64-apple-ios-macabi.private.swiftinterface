@@ -640,10 +640,6 @@ public enum CodeStatus : Swift.String, Swift.Codable, Swift.Sendable {
   case permanent
   case history
   case warningLight
-  case testFailed
-  case testNotCompletedThisOperationCycle
-  case testFailedThisOperationCycle
-  case testNotCompletedSinceLastClear
   public static func statusType(from string: Swift.String) -> RepairClubSDK.CodeStatus?
   public var statusCategory: RepairClubSDK.CodeStatusCategory {
     get
