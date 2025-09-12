@@ -10,6 +10,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.5.0] - 2025-09-02
+### Added
+- Added AVR Demo Support for GM
+
+### Fixed
+- 
+
+---
+
 ## [1.4.4] - 2025-09-02
 ### Added
 - Added additional logging
