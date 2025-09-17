@@ -14,19 +14,19 @@
 		</data>
 		<key>Info.plist</key>
 		<data>
-		lpDTj9sSMSQREHflhbiukqGNY1I=
+		vMcvvJ9O4MF05o7htiKKheXpycU=
 		</data>
 		<key>Modules/RepairClubSDK.swiftmodule/Project/arm64-apple-ios-simulator.swiftsourceinfo</key>
 		<data>
-		MBDvHJzJgvva8ZH1jWJ0BSkaOxc=
+		xRHlvuXlD8Zqjibe7ddfRZggsfg=
 		</data>
 		<key>Modules/RepairClubSDK.swiftmodule/Project/x86_64-apple-ios-simulator.swiftsourceinfo</key>
 		<data>
-		iiGYA1T381OV664HRRfySGbR5CM=
+		FOAz0PwwgB/Az6tT/DwVFr6SxVc=
 		</data>
 		<key>Modules/RepairClubSDK.swiftmodule/arm64-apple-ios-simulator.abi.json</key>
 		<data>
-		cV7yJZc2B1ySelO9NlZalW8mcRo=
+		i8On6BqSDjbfY6i9Ik6DEjLDwBE=
 		</data>
 		<key>Modules/RepairClubSDK.swiftmodule/arm64-apple-ios-simulator.private.swiftinterface</key>
 		<data>
@@ -34,7 +34,7 @@
 		</data>
 		<key>Modules/RepairClubSDK.swiftmodule/arm64-apple-ios-simulator.swiftdoc</key>
 		<data>
-		TCi0J3tcd7ELJw74AuOKyUCc1xs=
+		TUnxJUJvpwdXEhzhdGpTW9pc9vI=
 		</data>
 		<key>Modules/RepairClubSDK.swiftmodule/arm64-apple-ios-simulator.swiftinterface</key>
 		<data>
@@ -42,11 +42,11 @@
 		</data>
 		<key>Modules/RepairClubSDK.swiftmodule/arm64-apple-ios-simulator.swiftmodule</key>
 		<data>
-		VfFDJNRRLj3AvPGMpP4u70vQTRk=
+		2h/kfri24W9wFIuJtQ84cgUFURE=
 		</data>
 		<key>Modules/RepairClubSDK.swiftmodule/x86_64-apple-ios-simulator.abi.json</key>
 		<data>
-		cV7yJZc2B1ySelO9NlZalW8mcRo=
+		i8On6BqSDjbfY6i9Ik6DEjLDwBE=
 		</data>
 		<key>Modules/RepairClubSDK.swiftmodule/x86_64-apple-ios-simulator.private.swiftinterface</key>
 		<data>
@@ -54,7 +54,7 @@
 		</data>
 		<key>Modules/RepairClubSDK.swiftmodule/x86_64-apple-ios-simulator.swiftdoc</key>
 		<data>
-		NUjf3fcQqvVbVEHB+zcus8k6Oos=
+		tZuxe/4aYZCIZzDMUCLkVBOV8Vc=
 		</data>
 		<key>Modules/RepairClubSDK.swiftmodule/x86_64-apple-ios-simulator.swiftinterface</key>
 		<data>
@@ -62,7 +62,7 @@
 		</data>
 		<key>Modules/RepairClubSDK.swiftmodule/x86_64-apple-ios-simulator.swiftmodule</key>
 		<data>
-		BbofAEpxZlCb6F3xMVV2NxvqoO8=
+		I+5LNhQC/Pgu+RW8C266IjAT120=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -89,21 +89,21 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			5J0z+XT6bPT0mUiU5L87jTsLcA79pbw5wVE01c8QRLc=
+			v8Frk8EBqRWrCCK7MbAjpGymPzFBj86PUS9usEArooM=
 			</data>
 		</dict>
 		<key>Modules/RepairClubSDK.swiftmodule/Project/x86_64-apple-ios-simulator.swiftsourceinfo</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			bXPrrYNYx7oXY+cvfMSZSv2bnRKwQCKYQERsGijJYig=
+			DKqVcQuOs2pflP2Cy3E9s/iF9fL5Iy/T+5sH46onthA=
 			</data>
 		</dict>
 		<key>Modules/RepairClubSDK.swiftmodule/arm64-apple-ios-simulator.abi.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			cXJqTti7prDFTkSWq8Ii6rXbRV40kmAXmaOvqlE//f4=
+			QM5S/EfA8phB2NvDtvFRTuCpsA3Vvd6ZL9SSlVL3S+g=
 			</data>
 		</dict>
 		<key>Modules/RepairClubSDK.swiftmodule/arm64-apple-ios-simulator.private.swiftinterface</key>
@@ -117,7 +117,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			q/IbgoNEWMPswnsD7nn4+9MCoJbrgHjDgYdUm0Z9DtU=
+			sbTnpBdNYhj7j078BY9dvhsckyBUg0nIAgP/iLBRoZU=
 			</data>
 		</dict>
 		<key>Modules/RepairClubSDK.swiftmodule/arm64-apple-ios-simulator.swiftinterface</key>
@@ -131,14 +131,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			SrLCVAS8YErAFyxb39anRbHuMsSafvMmQyE/Uz425LY=
+			LRwWmORTZKf1Z9hjQJcBdzhYNisU/IiwkSwe74RnEW4=
 			</data>
 		</dict>
 		<key>Modules/RepairClubSDK.swiftmodule/x86_64-apple-ios-simulator.abi.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			cXJqTti7prDFTkSWq8Ii6rXbRV40kmAXmaOvqlE//f4=
+			QM5S/EfA8phB2NvDtvFRTuCpsA3Vvd6ZL9SSlVL3S+g=
 			</data>
 		</dict>
 		<key>Modules/RepairClubSDK.swiftmodule/x86_64-apple-ios-simulator.private.swiftinterface</key>
@@ -152,7 +152,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			aTqm7vGAhZsUtINvEiYwcS3/70oiPPtHzc9JjIiGMv0=
+			8M3tRN14nnthLtVqElG6wNIW/EHRbv3XBvv+pO0Xfwo=
 			</data>
 		</dict>
 		<key>Modules/RepairClubSDK.swiftmodule/x86_64-apple-ios-simulator.swiftinterface</key>
@@ -166,7 +166,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			5JN7oAbt3cEZrA9VGHShW8aDOGC2+j/E2ebVgtvJ+X0=
+			4gn1eytG0bg2ornbo6h6GikyoPyvWFMxxvCz5yClN8g=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>
