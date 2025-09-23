@@ -10,9 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.5.1] - 2025-09-17
+## [1.5.1] - 2025-09-23
 ### Added
-- 
+- Added support for more DTC Codes Statuses
 
 ### Fixed
 - Fixed AVR single request functionality

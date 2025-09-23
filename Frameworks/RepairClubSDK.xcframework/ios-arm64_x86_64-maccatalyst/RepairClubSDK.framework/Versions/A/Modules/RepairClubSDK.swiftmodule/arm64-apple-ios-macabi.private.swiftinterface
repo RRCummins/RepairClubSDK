@@ -703,6 +703,10 @@ public enum CodeStatus : Swift.String, Swift.Codable, Swift.Sendable {
   case permanent
   case history
   case warningLight
+  case testFailed
+  case testNotCompletedThisOperationCycle
+  case testFailedThisOperationCycle
+  case testNotCompletedSinceLastClear
   #if compiler(>=5.3) && $NonescapableTypes
   public static func statusType(from string: Swift.String) -> RepairClubSDK.CodeStatus?
   #endif
@@ -1117,6 +1121,7 @@ public struct ModelResult : Swift.Codable {
   public var liveDataLogs: [RepairClubSDK.LiveDataLog]
   public var otaUpdateLogs: [RepairClubSDK.OTAFirmwareUpdateLog]
   public var pidRecords: [Swift.String : RepairClubSDK.PidRecord]
+  public var valueRecords: [Swift.String : [Swift.String : Swift.String]]
   public func hash(into hasher: inout Swift.Hasher)
   public var name: Swift.String {
     get
@@ -1138,6 +1143,9 @@ public struct ModelResult : Swift.Codable {
 extension RepairClubSDK.SessionLog {
   #if compiler(>=5.3) && $NonescapableTypes
   public func jsonRepresentation(prettyPrint: Swift.Bool) -> Swift.String?
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
+  public func updateValueRecord(ecuID: Swift.String, mode: Swift.String, pid: Swift.String, recentValue: Swift.String?, lowValue: Swift.String?, highValue: Swift.String?, message: Swift.String?, name: Swift.String?)
   #endif
 }
 extension RepairClubSDK.SessionLog : Swift.Equatable {
@@ -1384,6 +1392,23 @@ extension RepairClubSDK.SessionLog {
   public func calculateComponentHashes() -> [Swift.String : Swift.String]
   public func componentTimestamps() -> [Swift.String : Swift.Int]
 }
+public struct AVValueRecord : Swift.Codable, Swift.Hashable {
+  public var ecuKey: Swift.String
+  public var valueKey: Swift.String
+  public var highValue: Swift.String?
+  public var lowValue: Swift.String?
+  public var recentValue: Swift.String?
+  public var recentMessage: Swift.String?
+  public var unit: Swift.String?
+  public var timestamp: Foundation.Date
+  public static func == (a: RepairClubSDK.AVValueRecord, b: RepairClubSDK.AVValueRecord) -> Swift.Bool
+  public func encode(to encoder: any Swift.Encoder) throws
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+  public init(from decoder: any Swift.Decoder) throws
+}
 public enum Status : Swift.String, Swift.Codable, Swift.Sendable {
   case notStarted, started, ended, complete
   #if compiler(>=5.3) && $NonescapableTypes
@@ -1530,6 +1555,7 @@ public enum SampleVehicle : Swift.String, Swift.Codable, Swift.CaseIterable {
   case hondaAccord2010
   case subaruImpreza2019
   case volkswagenGolfGTI2022
+  case chevroletMalibu2022
   public var description: Swift.String {
     get
   }
@@ -1671,6 +1697,7 @@ public struct AdvancedValueSample : Swift.Identifiable {
   public let rawPayload: Swift.String
   public let value: RepairClubSDK.AVValueType?
   public let nrc: Swift.String?
+  public let rawAR: Swift.String
   public typealias ID = Foundation.UUID
 }
 public struct AVECU : Swift.Identifiable, Swift.Sendable {
