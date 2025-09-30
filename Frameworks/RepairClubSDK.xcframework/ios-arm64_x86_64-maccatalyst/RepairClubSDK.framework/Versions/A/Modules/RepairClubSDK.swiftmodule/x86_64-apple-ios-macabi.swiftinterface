@@ -1695,7 +1695,7 @@ public struct AdvancedValueSample : Swift.Identifiable {
   public let valueKey: Swift.String
   public let decoder: Swift.String
   public let rawPayload: Swift.String
-  public let value: RepairClubSDK.AVValueType?
+  public let value: RepairClubSDK.VehicleDataValueType?
   public let nrc: Swift.String?
   public let rawAR: Swift.String
   public typealias ID = Foundation.UUID
@@ -1713,55 +1713,6 @@ public struct AVValue : Swift.Identifiable, Swift.Sendable {
   public let name: Swift.String
   public let unit: Swift.String?
   public typealias ID = Foundation.UUID
-}
-public struct AVReading : Swift.Identifiable, Swift.Sendable {
-  public let id: Foundation.UUID
-  public let ecuKey: Swift.String
-  public let valueKey: Swift.String
-  public var unit: Swift.String?
-  public var title: Swift.String
-  public var values: [RepairClubSDK.AVSample]
-  public var isExpanded: Swift.Bool
-  #if compiler(>=5.3) && $NonescapableTypes
-  public init(id: Foundation.UUID = UUID(), ecuKey: Swift.String, valueKey: Swift.String, unit: Swift.String? = nil, title: Swift.String, values: [RepairClubSDK.AVSample] = [], isExpanded: Swift.Bool = true)
-  #endif
-  public typealias ID = Foundation.UUID
-}
-public enum AVValueType : Swift.Codable, Swift.Sendable, Swift.Equatable, Swift.Hashable {
-  case number(Swift.Double)
-  case text(Swift.String)
-  case enumeration(Swift.String)
-  case raw(Swift.String)
-  case noData
-  case nrc(Swift.String)
-  public var description: Swift.String {
-    get
-  }
-  public static func == (a: RepairClubSDK.AVValueType, b: RepairClubSDK.AVValueType) -> Swift.Bool
-  public func encode(to encoder: any Swift.Encoder) throws
-  public func hash(into hasher: inout Swift.Hasher)
-  public var hashValue: Swift.Int {
-    get
-  }
-  public init(from decoder: any Swift.Decoder) throws
-}
-public struct AVSample : Swift.Codable, Swift.Identifiable, Swift.Hashable, Swift.Sendable {
-  public var id: Foundation.UUID
-  public var code: Swift.String
-  public var unit: Swift.String?
-  public var date: Foundation.Date
-  public var value: RepairClubSDK.AVValueType
-  #if compiler(>=5.3) && $NonescapableTypes
-  public init(code: Swift.String, unit: Swift.String? = nil, date: Foundation.Date = Date(), value: RepairClubSDK.AVValueType)
-  #endif
-  public static func == (a: RepairClubSDK.AVSample, b: RepairClubSDK.AVSample) -> Swift.Bool
-  public typealias ID = Foundation.UUID
-  public func encode(to encoder: any Swift.Encoder) throws
-  public func hash(into hasher: inout Swift.Hasher)
-  public var hashValue: Swift.Int {
-    get
-  }
-  public init(from decoder: any Swift.Decoder) throws
 }
 public struct SupportTask {
   public enum SupportTaskType {
@@ -1982,6 +1933,59 @@ public enum ConnectionCommands : Swift.String, Swift.CaseIterable {
   public var rawValue: Swift.String {
     get
   }
+}
+public enum VehicleDataValueType : Swift.Codable, Swift.Sendable, Swift.Equatable, Swift.Hashable {
+  case number(Swift.Double)
+  case text(Swift.String)
+  case enumeration(Swift.String)
+  case raw(Swift.String)
+  case noData
+  case nrc(Swift.String)
+  public var description: Swift.String {
+    get
+  }
+  public static func == (a: RepairClubSDK.VehicleDataValueType, b: RepairClubSDK.VehicleDataValueType) -> Swift.Bool
+  public func encode(to encoder: any Swift.Encoder) throws
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+  public init(from decoder: any Swift.Decoder) throws
+}
+public struct VehicleDataSample : Swift.Codable, Swift.Identifiable, Swift.Hashable, Swift.Sendable {
+  public var id: Foundation.UUID
+  public var code: Swift.String
+  public var unit: Swift.String?
+  public var date: Foundation.Date
+  public var value: RepairClubSDK.VehicleDataValueType
+  #if compiler(>=5.3) && $NonescapableTypes
+  public init(code: Swift.String, unit: Swift.String? = nil, date: Foundation.Date = Date(), value: RepairClubSDK.VehicleDataValueType)
+  #endif
+  public static func == (a: RepairClubSDK.VehicleDataSample, b: RepairClubSDK.VehicleDataSample) -> Swift.Bool
+  public typealias ID = Foundation.UUID
+  public func encode(to encoder: any Swift.Encoder) throws
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+  public init(from decoder: any Swift.Decoder) throws
+}
+public struct VehicleDataStream : Swift.Codable, Swift.Identifiable, Swift.Sendable {
+  public var id: Swift.String {
+    get
+  }
+  public var ecuKey: Swift.String
+  public var valueKey: Swift.String
+  public var unit: Swift.String?
+  public var technicalName: Swift.String?
+  public var displayName: Swift.String?
+  public var values: [RepairClubSDK.VehicleDataSample]
+  #if compiler(>=5.3) && $NonescapableTypes
+  public init(ecuKey: Swift.String, valueKey: Swift.String, unit: Swift.String? = nil, technicalName: Swift.String? = nil, displayName: Swift.String? = nil, values: [RepairClubSDK.VehicleDataSample] = [])
+  #endif
+  public typealias ID = Swift.String
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
 }
 extension UIKit.UIDevice {
   @_Concurrency.MainActor @preconcurrency public var iPhone: Swift.Bool {
@@ -2438,8 +2442,8 @@ extension RepairClubSDK.ResponseStatus {
   final public func returnLiveFeedCSV(from feedEntries: [RepairClubSDK.LiveFeedDatedEntry], countToKeep: Swift.Int = 1_000) -> RepairClubSDK.Result<Swift.String, any Swift.Error>
   final public func requestDataPoint(pid: Swift.String, oldAndNew: Swift.Bool = false, callback: @escaping (Swift.String) -> Swift.Void)
   final public func advancedValueCatalog() -> [RepairClubSDK.AVECU]
-  final public func advancedValueRequestOnce(keys: [(ecuKey: Swift.String, valueKey: Swift.String)], completion: @escaping ([RepairClubSDK.AVReading]) -> Swift.Void)
-  final public func advancedValueStartStreaming(keys: [(ecuKey: Swift.String, valueKey: Swift.String)], intervalSeconds: Foundation.TimeInterval = 1.0, onUpdate: @escaping ([RepairClubSDK.AVReading]) -> Swift.Void)
+  final public func advancedValueRequestOnce(keys: [(ecuKey: Swift.String, valueKey: Swift.String)], completion: @escaping ([RepairClubSDK.VehicleDataStream]) -> Swift.Void)
+  final public func advancedValueStartStreaming(keys: [(ecuKey: Swift.String, valueKey: Swift.String)], intervalSeconds: Foundation.TimeInterval = 1.0, onUpdate: @escaping ([RepairClubSDK.VehicleDataStream]) -> Swift.Void)
   final public func advancedValueStopStreaming()
   final public func subscribeToMonitors(_ completionHandler: @escaping (RepairClubSDK.Result<[RepairClubSDK.ValueMonitor], any Swift.Error>) -> Swift.Void)
   final public func subscribeToMode06Monitors(_ completionHandler: @escaping (RepairClubSDK.Result<[RepairClubSDK.ValueMonitor], any Swift.Error>) -> Swift.Void)
