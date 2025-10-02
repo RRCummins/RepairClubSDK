@@ -15,7 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 
 
 ### Fixed
-- 
+- Ford support for AVR
+- Fixed a crash
+- Fixed a GM BCM bug
 
 ---
 

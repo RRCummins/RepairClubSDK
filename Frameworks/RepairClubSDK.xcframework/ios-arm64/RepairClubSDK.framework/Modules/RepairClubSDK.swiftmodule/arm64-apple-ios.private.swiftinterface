@@ -2396,7 +2396,7 @@ extension RepairClubSDK.ResponseStatus {
   final public func configureSdkUser(userID: Swift.String)
   final public func updateApp(state: RepairClubSDK.AppForegroundState)
   final public func returnDevices(_ completionHandler: @escaping (RepairClubSDK.Result<[RepairClubSDK.DeviceItem], any Swift.Error>) -> Swift.Void)
-  final public func connectToDevice(peripheral: CoreBluetooth.CBPeripheral, _ connectionHandler: @escaping (RepairClubSDK.ConnectionEntry, RepairClubSDK.ConnectionStage, RepairClubSDK.ConnectionState) -> Swift.Void)
+  final public func connectToDevice(peripheral: CoreBluetooth.CBPeripheral, simple: Swift.Bool = false, _ connectionHandler: @escaping (RepairClubSDK.ConnectionEntry, RepairClubSDK.ConnectionStage, RepairClubSDK.ConnectionState) -> Swift.Void)
   final public func subscribeToDisconnections(completionHandler: @escaping () -> Swift.Void)
   #if compiler(>=5.3) && $NonescapableTypes
   final public func reconnectToPeripheral(with peripheralID: Foundation.UUID, _ completionHandler: @escaping (RepairClubSDK.Result<CoreBluetooth.CBPeripheral?, any Swift.Error>) -> Swift.Void)
@@ -2412,6 +2412,7 @@ extension RepairClubSDK.ResponseStatus {
   final public func registerBluetoothStatus(changes completionHandler: @escaping (RepairClubSDK.BluetoothStatus) -> Swift.Void)
   final public func userWillEnterManualVehicleMode()
   final public func stopScanningForDevices()
+  final public func retryFetchingTheVIN()
   final public func retryDecodingTheVIN()
   final public func retryTheVehicleConfig()
   #if compiler(>=5.3) && $NonescapableTypes
