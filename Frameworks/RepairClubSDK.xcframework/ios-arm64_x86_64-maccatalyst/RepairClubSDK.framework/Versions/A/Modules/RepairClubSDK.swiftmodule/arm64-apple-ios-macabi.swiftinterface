@@ -1323,6 +1323,7 @@ public struct AdvancedOperationLog : Swift.Identifiable, Swift.Codable {
   public var messagesReceived: [Swift.String]
   public var results: [Swift.String]
   public var numberOfRespondingModules: Swift.Int
+  public var numberOfTroubleCodes: Swift.Int?
   public var numberOfConfigECUs: Swift.Int
   public var numberOfSyncedBuses: Swift.Int
   public var numberOfConfigBuses: Swift.Int
