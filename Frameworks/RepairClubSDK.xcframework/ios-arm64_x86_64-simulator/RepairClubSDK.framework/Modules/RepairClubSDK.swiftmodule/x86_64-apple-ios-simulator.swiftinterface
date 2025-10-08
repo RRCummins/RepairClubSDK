@@ -1557,6 +1557,7 @@ public enum SampleVehicle : Swift.String, Swift.Codable, Swift.CaseIterable {
   case subaruImpreza2019
   case volkswagenGolfGTI2022
   case chevroletMalibu2022
+  case chevroletSuburban2023
   public var description: Swift.String {
     get
   }
@@ -2444,6 +2445,7 @@ extension RepairClubSDK.ResponseStatus {
   final public func returnLiveFeedCSV(from feedEntries: [RepairClubSDK.LiveFeedDatedEntry], countToKeep: Swift.Int = 1_000) -> RepairClubSDK.Result<Swift.String, any Swift.Error>
   final public func requestDataPoint(pid: Swift.String, oldAndNew: Swift.Bool = false, callback: @escaping (Swift.String) -> Swift.Void)
   final public func advancedValueCatalog() -> [RepairClubSDK.AVECU]
+  final public func advancedValueOperationCatalog(set: Swift.String) -> [RepairClubSDK.AVECU]
   final public func advancedValueRequestOnce(keys: [(ecuKey: Swift.String, valueKey: Swift.String)], completion: @escaping ([RepairClubSDK.VehicleDataStream]) -> Swift.Void)
   final public func advancedValueStartStreaming(keys: [(ecuKey: Swift.String, valueKey: Swift.String)], intervalSeconds: Foundation.TimeInterval = 1.0, onUpdate: @escaping ([RepairClubSDK.VehicleDataStream]) -> Swift.Void)
   final public func advancedValueStopStreaming()
