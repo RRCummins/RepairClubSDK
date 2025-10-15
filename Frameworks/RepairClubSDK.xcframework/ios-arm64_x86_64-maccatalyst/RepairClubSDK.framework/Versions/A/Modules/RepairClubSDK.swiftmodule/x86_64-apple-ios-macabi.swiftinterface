@@ -325,45 +325,18 @@ public struct FirmwareVersionInfo {
   public let externalNotes: [Swift.String]?
   public let internalNotes: [Swift.String]?
 }
-public struct LiveFeedDatedEntry : Swift.Codable, Swift.Identifiable {
-  public var id: Foundation.UUID
-  public let pid: Swift.String
-  public let unit: Swift.String
-  public var date: Foundation.Date
-  public var values: [RepairClubSDK.PidItem]
-  public func lastTwentyValues() -> [RepairClubSDK.PidItem]
-  public typealias ID = Foundation.UUID
-  public func encode(to encoder: any Swift.Encoder) throws
-  public init(from decoder: any Swift.Decoder) throws
+public typealias LiveFeedDatedEntry = RepairClubSDK.VehicleDataStream
+public typealias PidItem = RepairClubSDK.VehicleDataSample
+extension RepairClubSDK.VehicleDataStream {
+  public mutating func add(sample: RepairClubSDK.VehicleDataSample, keepLast limit: Swift.Int = 1_000)
+  public func lastTwentySamples() -> [RepairClubSDK.VehicleDataSample]
+  public func lastTwentySecondsNumericSamples() -> [(Foundation.Date, Swift.Double)]
+  public func lowestValue(shouldConvert: Swift.Bool) -> Swift.Double
+  public func greatestValue(shouldConvert: Swift.Bool) -> Swift.Double
 }
-public struct PidItem : Swift.Codable, Swift.Identifiable, Swift.Hashable, Swift.Comparable, Swift.Sendable {
-  public var id: Foundation.UUID
-  public var code: Swift.String
-  public var unit: Swift.String
-  public var date: Foundation.Date
-  public var value: Swift.Double
-  public init(id: Foundation.UUID = UUID(), code: Swift.String, unit: Swift.String, date: Foundation.Date, value: Swift.Double)
-  public static func == (lhs: RepairClubSDK.PidItem, rhs: RepairClubSDK.PidItem) -> Swift.Bool
-  public static func < (lhs: RepairClubSDK.PidItem, rhs: RepairClubSDK.PidItem) -> Swift.Bool
-  public func convertedUnit(shouldConvert: Swift.Bool) -> Swift.String
-  public func convertedValue(shouldConvert: Swift.Bool) -> Swift.Double
-  public func convertedRoundedString(shouldConvert: Swift.Bool) -> Swift.String
-  public typealias ID = Foundation.UUID
-  public func encode(to encoder: any Swift.Encoder) throws
-  public func hash(into hasher: inout Swift.Hasher)
-  public var hashValue: Swift.Int {
-    get
-  }
-  public init(from decoder: any Swift.Decoder) throws
-}
-public struct LiveFeedSessionEntry : Swift.Codable, Swift.Identifiable {
-  public let id: Swift.String
-  public let date: Foundation.Date
-  public let vin: Swift.String
-  public let entries: [RepairClubSDK.LiveFeedDatedEntry]
-  public typealias ID = Swift.String
-  public func encode(to encoder: any Swift.Encoder) throws
-  public init(from decoder: any Swift.Decoder) throws
+extension RepairClubSDK.VehicleDataSample : Swift.Comparable {
+  public static func == (lhs: RepairClubSDK.VehicleDataSample, rhs: RepairClubSDK.VehicleDataSample) -> Swift.Bool
+  public static func < (lhs: RepairClubSDK.VehicleDataSample, rhs: RepairClubSDK.VehicleDataSample) -> Swift.Bool
 }
 public struct ModuleItem : Swift.Identifiable, Swift.Codable, Swift.Hashable, Swift.Sendable {
   public var id: Foundation.UUID
@@ -1273,8 +1246,8 @@ public struct LiveDataLog : Swift.Identifiable, Swift.Codable {
   public var date: Foundation.Date
   public var availableSources: [RepairClubSDK.LiveDataSource]
   public var selectedSources: [RepairClubSDK.LiveDataSource]
-  public var liveFeedEntries: [Swift.String : RepairClubSDK.LiveFeedDatedEntry]
-  public var liveFeedEntriesForDisplay: [Swift.String : [RepairClubSDK.PidItem]]
+  public var liveFeedEntries: [Swift.String : RepairClubSDK.VehicleDataStream]
+  public var liveFeedEntriesForDisplay: [Swift.String : [RepairClubSDK.VehicleDataSample]]
   public var messagesReceived: [Swift.String]
   public typealias ID = Foundation.UUID
   public func encode(to encoder: any Swift.Encoder) throws
@@ -1954,6 +1927,30 @@ public enum VehicleDataValueType : Swift.Codable, Swift.Sendable, Swift.Equatabl
   }
   public init(from decoder: any Swift.Decoder) throws
 }
+public enum VehicleDataValueFormat : Swift.String, Swift.Codable, Swift.Sendable, Swift.Equatable, Swift.Hashable {
+  case numeric
+  case text
+  case enumeration
+  case raw
+  #if compiler(>=5.3) && $NonescapableTypes
+  public init?(rawValue: Swift.String)
+  #endif
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+extension RepairClubSDK.VehicleDataStream {
+  #if compiler(>=5.3) && $NonescapableTypes
+  public mutating func append(_ sample: RepairClubSDK.VehicleDataSample, keepingLast limit: Swift.Int? = nil)
+  #endif
+  public func lastSamples(limit: Swift.Int) -> [RepairClubSDK.VehicleDataSample]
+  #if compiler(>=5.3) && $NonescapableTypes
+  public var latestSample: RepairClubSDK.VehicleDataSample? {
+    get
+  }
+  #endif
+}
 public struct VehicleDataSample : Swift.Codable, Swift.Identifiable, Swift.Hashable, Swift.Sendable {
   public var id: Foundation.UUID
   public var code: Swift.String
@@ -1963,7 +1960,9 @@ public struct VehicleDataSample : Swift.Codable, Swift.Identifiable, Swift.Hasha
   #if compiler(>=5.3) && $NonescapableTypes
   public init(code: Swift.String, unit: Swift.String? = nil, date: Foundation.Date = Date(), value: RepairClubSDK.VehicleDataValueType)
   #endif
-  public static func == (a: RepairClubSDK.VehicleDataSample, b: RepairClubSDK.VehicleDataSample) -> Swift.Bool
+  #if compiler(>=5.3) && $NonescapableTypes
+  public init(code: Swift.String, unit: Swift.String? = nil, date: Foundation.Date = Date(), value: Swift.Double)
+  #endif
   public typealias ID = Foundation.UUID
   public func encode(to encoder: any Swift.Encoder) throws
   public func hash(into hasher: inout Swift.Hasher)
@@ -1971,6 +1970,82 @@ public struct VehicleDataSample : Swift.Codable, Swift.Identifiable, Swift.Hasha
     get
   }
   public init(from decoder: any Swift.Decoder) throws
+}
+extension RepairClubSDK.VehicleDataSample {
+  #if compiler(>=5.3) && $NonescapableTypes
+  public var numericValue: Swift.Double? {
+    get
+  }
+  #endif
+  public var stringValue: Swift.String {
+    get
+  }
+  public func convertedValue(shouldConvert: Swift.Bool) -> Swift.Double
+  public func convertedUnit(shouldConvert: Swift.Bool) -> Swift.String
+}
+public struct VehicleDataDescriptor : Swift.Codable, Swift.Identifiable, Swift.Hashable, Swift.Sendable {
+  public static let defaultEcuKey: Swift.String
+  public var id: Swift.String
+  public var pidCode: Swift.String
+  public var ecuKey: Swift.String
+  public var name: Swift.String
+  public var shortName: Swift.String?
+  public var unit: Swift.String
+  public var min: Swift.Double?
+  public var max: Swift.Double?
+  public var dynamicStartMin: Swift.Double?
+  public var dynamicStartMax: Swift.Double?
+  public var uicolor: UIKit.UIColor?
+  public var positionLeading: Swift.Bool
+  public var convertableUnits: RepairClubSDK.ConvertableUnits?
+  public var isAvailable: Swift.Bool
+  public var useSetMin: Swift.Bool
+  public var useSetMax: Swift.Bool
+  public var valueFormat: RepairClubSDK.VehicleDataValueFormat
+  public var enumerationMap: [Swift.String : Swift.String]?
+  #if compiler(>=5.3) && $NonescapableTypes
+  public init(id: Swift.String, pidCode: Swift.String, ecuKey: Swift.String = VehicleDataDescriptor.defaultEcuKey, name: Swift.String, unit: Swift.String, shortName: Swift.String? = nil, min: Swift.Double? = nil, max: Swift.Double? = nil, dynamicStartMin: Swift.Double? = nil, dynamicStartMax: Swift.Double? = nil, isAvailable: Swift.Bool = false, useSetMin: Swift.Bool = true, useSetMax: Swift.Bool = true, positionLeading: Swift.Bool = true, convertableUnits: RepairClubSDK.ConvertableUnits? = nil, color: UIKit.UIColor? = nil, valueFormat: RepairClubSDK.VehicleDataValueFormat = .numeric, enumerationMap: [Swift.String : Swift.String]? = nil)
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
+  public init(id: Swift.String, ecuKey: Swift.String = VehicleDataDescriptor.defaultEcuKey, name: Swift.String, unit: Swift.String, shortName: Swift.String? = nil, min: Swift.Double? = nil, max: Swift.Double? = nil, dynamicStartMin: Swift.Double? = nil, dynamicStartMax: Swift.Double? = nil, isAvailable: Swift.Bool = false, useSetMin: Swift.Bool = true, useSetMax: Swift.Bool = true, positionLeading: Swift.Bool = true, convertableUnits: RepairClubSDK.ConvertableUnits? = nil, color: UIKit.UIColor? = nil, valueFormat: RepairClubSDK.VehicleDataValueFormat = .numeric, enumerationMap: [Swift.String : Swift.String]? = nil)
+  #endif
+  public init(source: RepairClubSDK.VehicleDataDescriptor, uiColor: UIKit.UIColor, positionLeading: Swift.Bool)
+  #if compiler(>=5.3) && $NonescapableTypes
+  public init(id: Swift.String, ecuKey: Swift.String = VehicleDataDescriptor.defaultEcuKey, name: Swift.String, shortName: Swift.String? = nil, isAvailable: Swift.Bool = true, useSetMin: Swift.Bool = true, useSetMax: Swift.Bool = true, valueFormat: RepairClubSDK.VehicleDataValueFormat = .numeric, enumerationMap: [Swift.String : Swift.String]? = nil)
+  #endif
+  public var displayName: Swift.String {
+    get
+  }
+  public var requestCode: Swift.String {
+    get
+  }
+  #if compiler(>=5.3) && $NonescapableTypes
+  public func minConverted(shouldConvert: Swift.Bool) -> Swift.Double?
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
+  public func maxConverted(shouldConvert: Swift.Bool) -> Swift.Double?
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
+  public func dynamicStartMinConverted(shouldConvert: Swift.Bool) -> Swift.Double?
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
+  public func dynamicStartMaxConverted(shouldConvert: Swift.Bool) -> Swift.Double?
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
+  public func converted(valueIn: Swift.Double?, shouldConvert: Swift.Bool) -> Swift.Double?
+  #endif
+  public func convertedUnit(shouldConvert: Swift.Bool) -> Swift.String
+  public func decodeLiveValue(from raw: Swift.String) -> RepairClubSDK.VehicleDataValueType
+  public typealias ID = Swift.String
+  public func encode(to encoder: any Swift.Encoder) throws
+  public var hashValue: Swift.Int {
+    get
+  }
+  public init(from decoder: any Swift.Decoder) throws
+}
+extension RepairClubSDK.VehicleDataDescriptor {
+  public static func == (lhs: RepairClubSDK.VehicleDataDescriptor, rhs: RepairClubSDK.VehicleDataDescriptor) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
 }
 public struct VehicleDataStream : Swift.Codable, Swift.Identifiable, Swift.Sendable {
   public var id: Swift.String {
@@ -2189,68 +2264,8 @@ public struct ServiceAdvanced : Swift.Codable, Swift.Identifiable {
   public func encode(to encoder: any Swift.Encoder) throws
   public init(from decoder: any Swift.Decoder) throws
 }
-public struct LiveDataSource : Swift.Codable, Swift.Identifiable, Swift.Hashable, Swift.Sendable {
-  public var id: Swift.String
-  public var pidCode: Swift.String
-  public var name: Swift.String
-  public var shortName: Swift.String?
-  public var unit: Swift.String
-  public var min: Swift.Double?
-  public var max: Swift.Double?
-  public var dynamicStartMin: Swift.Double?
-  public var dynamicStartMax: Swift.Double?
-  public var uicolor: UIKit.UIColor?
-  public var positionLeading: Swift.Bool
-  public var convertableUnits: RepairClubSDK.ConvertableUnits?
-  public var isAvailable: Swift.Bool
-  public var useSetMin: Swift.Bool
-  public var useSetMax: Swift.Bool
-  public init(source: RepairClubSDK.LiveDataSource, uiColor: UIKit.UIColor, positionLeading: Swift.Bool)
-  #if compiler(>=5.3) && $NonescapableTypes
-  public init(id: Swift.String, pidCode: Swift.String, name: Swift.String, unit: Swift.String, shortName: Swift.String? = nil)
-  #endif
-  #if compiler(>=5.3) && $NonescapableTypes
-  public init(id: Swift.String, name: Swift.String, unit: Swift.String, min: Swift.Double? = nil, max: Swift.Double? = nil, dynamicStartMin: Swift.Double? = nil, dynamicStartMax: Swift.Double? = nil, isAvailable: Swift.Bool = false, useSetMin: Swift.Bool = true, useSetMax: Swift.Bool = true, shortName: Swift.String? = nil)
-  #endif
-  #if compiler(>=5.3) && $NonescapableTypes
-  public init(id: Swift.String, name: Swift.String, isAvailable: Swift.Bool = true, useSetMin: Swift.Bool = true, useSetMax: Swift.Bool = true, shortName: Swift.String? = nil)
-  #endif
-  public func hash(into hasher: inout Swift.Hasher)
-  public var displayName: Swift.String {
-    get
-  }
-  public var requestCode: Swift.String {
-    get
-  }
-  public var color: SwiftUICore.Color {
-    get
-  }
-  public mutating func setAsSecondaryColor()
-  #if compiler(>=5.3) && $NonescapableTypes
-  public func minConverted(shouldConvert: Swift.Bool) -> Swift.Double?
-  #endif
-  #if compiler(>=5.3) && $NonescapableTypes
-  public func maxConverted(shouldConvert: Swift.Bool) -> Swift.Double?
-  #endif
-  #if compiler(>=5.3) && $NonescapableTypes
-  public func dynamicStartMinConverted(shouldConvert: Swift.Bool) -> Swift.Double?
-  #endif
-  #if compiler(>=5.3) && $NonescapableTypes
-  public func dynamicStartMaxConverted(shouldConvert: Swift.Bool) -> Swift.Double?
-  #endif
-  #if compiler(>=5.3) && $NonescapableTypes
-  public func converted(valueIn: Swift.Double?, shouldConvert: Swift.Bool) -> Swift.Double?
-  #endif
-  public func convertedUnit(shouldConvert: Swift.Bool) -> Swift.String
-  public static func == (a: RepairClubSDK.LiveDataSource, b: RepairClubSDK.LiveDataSource) -> Swift.Bool
-  public typealias ID = Swift.String
-  public func encode(to encoder: any Swift.Encoder) throws
-  public var hashValue: Swift.Int {
-    get
-  }
-  public init(from decoder: any Swift.Decoder) throws
-}
-extension RepairClubSDK.LiveDataSource {
+public typealias LiveDataSource = RepairClubSDK.VehicleDataDescriptor
+extension RepairClubSDK.VehicleDataDescriptor {
   public static let blankSource: RepairClubSDK.LiveDataSource
   public static let exampleRPM: RepairClubSDK.LiveDataSource
   public static let testSources: [RepairClubSDK.LiveDataSource]
@@ -2434,7 +2449,7 @@ extension RepairClubSDK.ResponseStatus {
   #endif
   final public func setCurrentVehicleToA(manual vehicle: RepairClubSDK.VehicleEntry)
   final public func requestVIN() -> RepairClubSDK.Result<Swift.String, any Swift.Error>
-  final public func subscribeToLiveStream(_ completionHandler: @escaping (RepairClubSDK.Result<[Swift.String : RepairClubSDK.LiveFeedDatedEntry], any Swift.Error>) -> Swift.Void)
+  final public func subscribeToLiveStream(_ completionHandler: @escaping (RepairClubSDK.Result<[Swift.String : RepairClubSDK.VehicleDataStream], any Swift.Error>) -> Swift.Void)
   final public func subscribeToLiveDataRanges(_ completionHandler: @escaping (RepairClubSDK.Result<(min: [Swift.String : Swift.Double], max: [Swift.String : Swift.Double]), any Swift.Error>) -> Swift.Void)
   final public func requestAllLiveDataSources() -> RepairClubSDK.Result<[RepairClubSDK.LiveDataSource], any Swift.Error>
   final public func requestAvailableLiveDataSources() -> RepairClubSDK.Result<[RepairClubSDK.LiveDataSource], any Swift.Error>
@@ -2442,7 +2457,7 @@ extension RepairClubSDK.ResponseStatus {
   final public func endLiveDataStream() -> Swift.Bool
   final public func requestModeDump(mode: Swift.String) -> RepairClubSDK.Result<Swift.Bool, any Swift.Error>
   final public func currentLiveFeedCSV(countToKeep: Swift.Int = 1_000) -> RepairClubSDK.Result<Swift.String, any Swift.Error>
-  final public func returnLiveFeedCSV(from feedEntries: [RepairClubSDK.LiveFeedDatedEntry], countToKeep: Swift.Int = 1_000) -> RepairClubSDK.Result<Swift.String, any Swift.Error>
+  final public func returnLiveFeedCSV(from feedEntries: [RepairClubSDK.VehicleDataStream], countToKeep: Swift.Int = 1_000) -> RepairClubSDK.Result<Swift.String, any Swift.Error>
   final public func requestDataPoint(pid: Swift.String, oldAndNew: Swift.Bool = false, callback: @escaping (Swift.String) -> Swift.Void)
   final public func advancedValueCatalog() -> [RepairClubSDK.AVECU]
   final public func advancedValueOperationCatalog(set: Swift.String) -> [RepairClubSDK.AVECU]
@@ -2604,14 +2619,14 @@ public struct ValueMonitor : Swift.Identifiable, Swift.Codable, Swift.Hashable, 
   public var name: Swift.String
   public var description: Swift.String
   public var status: Swift.Bool
-  public var values: [RepairClubSDK.PidItem]
+  public var values: [RepairClubSDK.VehicleDataSample]
   public var min: Swift.Double?
   public var max: Swift.Double?
   public var DTCs: [Swift.String]?
   public var readinessBitMap: [Swift.String]?
   public var readinessStatus: [Swift.Bool]?
   #if compiler(>=5.3) && $NonescapableTypes
-  public init(id: Swift.String = UUID().uuidString, type: RepairClubSDK.MonitorType, modeID: Swift.String, valueID: Swift.String, valueName: Swift.String, cid: Swift.String? = nil, cidName: Swift.String? = nil, unit: Swift.String, name: Swift.String, description: Swift.String, status: Swift.Bool, values: [RepairClubSDK.PidItem], min: Swift.Double? = nil, max: Swift.Double? = nil, DTCs: [Swift.String]? = nil, readinessBitMap: [Swift.String]? = nil, readinessStatus: [Swift.Bool]? = nil)
+  public init(id: Swift.String = UUID().uuidString, type: RepairClubSDK.MonitorType, modeID: Swift.String, valueID: Swift.String, valueName: Swift.String, cid: Swift.String? = nil, cidName: Swift.String? = nil, unit: Swift.String, name: Swift.String, description: Swift.String, status: Swift.Bool, values: [RepairClubSDK.VehicleDataSample], min: Swift.Double? = nil, max: Swift.Double? = nil, DTCs: [Swift.String]? = nil, readinessBitMap: [Swift.String]? = nil, readinessStatus: [Swift.Bool]? = nil)
   #endif
   public var valueInRange: RepairClubSDK.ValueInRange {
     get
@@ -2828,6 +2843,7 @@ extension RepairClubSDK.TechTip.Quality : Swift.RawRepresentable {}
 extension RepairClubSDK.ConnectionCommands : Swift.Equatable {}
 extension RepairClubSDK.ConnectionCommands : Swift.Hashable {}
 extension RepairClubSDK.ConnectionCommands : Swift.RawRepresentable {}
+extension RepairClubSDK.VehicleDataValueFormat : Swift.RawRepresentable {}
 extension UIKit.UIDevice.ScreenType : Swift.Equatable {}
 extension UIKit.UIDevice.ScreenType : Swift.Hashable {}
 extension UIKit.UIDevice.ScreenType : Swift.RawRepresentable {}
