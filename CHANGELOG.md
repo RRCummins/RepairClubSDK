@@ -10,15 +10,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.5.3] - 2025-10-15
+## [1.5.4] - 2025-10-30
 ### Added
-- Automatic handling of GM 29
-- Automatic handling of Ford Split
-- Added individual AVR catalogs
+- Updates to add better support for trims
+- Updates the scan narrative module layout
+- Adds unique modules to the scan narrative
+- Refactored and cleaning up VIN decode
 
 ### Fixed
-- Fixes flush BLE buffer bug
-- Fixes original prod firmware newline bug
+- Fixes a BLE crash
+- Fixes an advanced data queue crash
 
 ---
 

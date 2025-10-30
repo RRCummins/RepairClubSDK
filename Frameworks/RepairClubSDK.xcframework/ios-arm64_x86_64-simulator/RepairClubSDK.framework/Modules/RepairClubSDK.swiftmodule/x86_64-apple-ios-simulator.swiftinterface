@@ -7,6 +7,7 @@ import CommonCrypto
 import CoreBluetooth
 import CoreLocation
 import CryptoKit
+import Dispatch
 import Foundation
 import OSLog
 @_exported import RepairClubSDK
@@ -323,7 +324,6 @@ public enum FirmwareReleaseType : Swift.String, Swift.Codable, Swift.CaseIterabl
 public struct FirmwareVersionInfo {
   public let version: Swift.String
   public let externalNotes: [Swift.String]?
-  public let internalNotes: [Swift.String]?
 }
 public typealias LiveFeedDatedEntry = RepairClubSDK.VehicleDataStream
 public typealias PidItem = RepairClubSDK.VehicleDataSample
@@ -375,6 +375,7 @@ public struct VehicleEntry : Swift.Codable, Swift.Identifiable, Swift.Hashable, 
   public var makeID: Swift.Int?
   public var model: Swift.String
   public var modelID: Swift.Int?
+  public var trim: Swift.String?
   public var engine: Swift.String
   public var dateAdded: Foundation.Date
   public var lastScanDate: Foundation.Date?
@@ -389,10 +390,14 @@ public struct VehicleEntry : Swift.Codable, Swift.Identifiable, Swift.Hashable, 
   #endif
   public init(vinResult: RepairClubSDK.VINResult)
   public init(vinResult: RepairClubSDK.VINResult, vin: Swift.String)
+  public init(apiResponse: RepairClubSDK.RepairClubAPIVINResponse)
   public var description: Swift.String {
     get
   }
   public var shortDescription: Swift.String {
+    get
+  }
+  public var fullDescription: Swift.String {
     get
   }
   public var yearString: Swift.String {
@@ -1159,6 +1164,7 @@ public struct VehicleInfoLog : Swift.Identifiable, Swift.Codable {
   public var year: Swift.String?
   public var make: Swift.String?
   public var model: Swift.String?
+  public var trim: Swift.String?
   public var series: Swift.String?
   public var engine: Swift.String?
   public var connectionType: Swift.String?
@@ -2365,6 +2371,31 @@ extension RepairClubSDK.ResponseStatus {
     get
   }
 }
+public struct RepairClubAPIVINResponse : Swift.Codable, Swift.Sendable {
+  public let decodeType: Swift.String
+  public let vin: Swift.String
+  public let errorText: Swift.String
+  public let vehicleDescriptor: Swift.String
+  public let make: Swift.String
+  public let model: Swift.String
+  public let modelYear: Swift.String
+  public let trim: Swift.String?
+  public let fuelTypePrimary: Swift.String?
+  public let alreadyInCache: Swift.Bool?
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+public struct FirmwareReleaseDetailsInternal : Swift.Decodable {
+  public let firmware_id: Swift.String
+  public let version: Swift.String
+  public let firmwareStatus: Swift.String?
+  public let externalReleaseNotes: [Swift.String]?
+  public let internalReleaseNotes: [Swift.String]?
+  public var asPublic: RepairClubSDK.FirmwareInformationDetail {
+    get
+  }
+  public init(from decoder: any Swift.Decoder) throws
+}
 @_hasMissingDesignatedInitializers final public class RepairClubManager : Combine.ObservableObject {
   public static let shared: RepairClubSDK.RepairClubManager
   final public var repairClubSdkVersion: Swift.String {
@@ -2504,6 +2535,7 @@ extension RepairClubSDK.ResponseStatus {
   #endif
   final public func configureSDK(with configuration: RepairClubSDK.SDKConfiguration)
   final public func returnDevInfo(with key: Swift.String, completionHandler: @escaping (RepairClubSDK.Result<Any, any Swift.Error>) -> Swift.Void)
+  final public func returnDevInfoAsync(with key: Swift.String) async throws -> Any
   final public func setProcess(with key: Swift.String)
   final public func sendAdditionalDataRequests()
   final public func clearCache(type: RepairClubSDK.RepairClubManager.CacheType)
@@ -2532,13 +2564,10 @@ extension RepairClubSDK.ResponseStatus {
   #endif
   final public func stopDeviceFirmwareUpdate()
   #if compiler(>=5.3) && $NonescapableTypes
-  final public func subscribeToFirmwareVersionChanges(reqReleaseLevel: RepairClubSDK.FirmwareReleaseType? = nil, completionCallback: @escaping (Swift.String, Swift.String) -> Swift.Void)
+  final public func getFirmwareLatestVersionDetails(completion: @escaping (RepairClubSDK.FirmwareInformationDetail?) -> Swift.Void)
   #endif
   #if compiler(>=5.3) && $NonescapableTypes
-  final public func getFirmwareVersions(reqReleaseLevel: RepairClubSDK.FirmwareReleaseType = .production, completion: @escaping (Swift.String, Swift.String?, Swift.String?, Swift.String?) -> Swift.Void)
-  #endif
-  #if compiler(>=5.3) && $NonescapableTypes
-  final public func getFirmwareVersionsWithNotes(reqReleaseLevel: RepairClubSDK.FirmwareReleaseType = .production, completion: @escaping (Swift.String, RepairClubSDK.FirmwareVersionInfo?, RepairClubSDK.FirmwareVersionInfo?, RepairClubSDK.FirmwareVersionInfo?) -> Swift.Void)
+  final public func getFirmwareLatestVersionDetails() async throws -> RepairClubSDK.FirmwareInformationDetail?
   #endif
   #if compiler(>=5.3) && $NonescapableTypes
   final public func getDeviceFirmwareVersion() -> RepairClubSDK.Result<Swift.String?, any Swift.Error>
@@ -2606,6 +2635,18 @@ public enum OperationProgressUpdate {
   case operationFailed(errors: [RepairClubSDK.ErrorEntry])
 }
 public struct OperationInfo {
+}
+public struct FirmwareInformationDetail : Swift.Decodable, Swift.Sendable {
+  public let firmwareId: Swift.String
+  public let version: Swift.String
+  public let firmwareStatus: Swift.String?
+  public let externalReleaseNotes: [Swift.String]?
+  #if compiler(>=5.3) && $NonescapableTypes
+  public var status: RepairClubSDK.FirmwareReleaseType? {
+    get
+  }
+  #endif
+  public init(from decoder: any Swift.Decoder) throws
 }
 public struct ValueMonitor : Swift.Identifiable, Swift.Codable, Swift.Hashable, Swift.Equatable, Swift.Sendable {
   public var id: Swift.String
