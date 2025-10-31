@@ -2559,9 +2559,6 @@ public struct FirmwareReleaseDetailsInternal : Swift.Decodable {
   final public func startDeviceFirmwareUpdate(to version: Swift.String? = nil, reqReleaseLevel: RepairClubSDK.FirmwareReleaseType? = nil, authKey: Swift.String? = nil, progressCallback: @escaping (Swift.Double) -> Swift.Void, completionCallback: @escaping (RepairClubSDK.Result<Swift.Bool, any Swift.Error>) -> Swift.Void)
   #endif
   final public func cancelDeviceFirmwareUpdate(completionCallback: @escaping (RepairClubSDK.Result<Swift.Bool, any Swift.Error>) -> Swift.Void)
-  #if compiler(>=5.3) && $NonescapableTypes
-  final public func startDeviceFirmwareUpdate(reqVersion: Swift.String? = nil, reqReleaseLevel: RepairClubSDK.FirmwareReleaseType? = nil, authKey: Swift.String? = nil)
-  #endif
   final public func stopDeviceFirmwareUpdate()
   #if compiler(>=5.3) && $NonescapableTypes
   final public func getFirmwareLatestVersionDetails(completion: @escaping (RepairClubSDK.FirmwareInformationDetail?) -> Swift.Void)
