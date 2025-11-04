@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.5.4] - 2025-10-30
+## [1.5.4] - 2025-11-4
 ### Added
 - Updates to add better support for trims
 - Updates the scan narrative module layout
@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Fixes a BLE crash
 - Fixes an advanced data queue crash
+- Fixes a logging crash
 
 ---
 

@@ -1122,9 +1122,6 @@ extension RepairClubSDK.SessionLog {
   #if compiler(>=5.3) && $NonescapableTypes
   public func jsonRepresentation(prettyPrint: Swift.Bool) -> Swift.String?
   #endif
-  #if compiler(>=5.3) && $NonescapableTypes
-  public func updateValueRecord(ecuID: Swift.String, mode: Swift.String, pid: Swift.String, recentValue: Swift.String?, lowValue: Swift.String?, highValue: Swift.String?, message: Swift.String?, name: Swift.String?)
-  #endif
 }
 extension RepairClubSDK.SessionLog : Swift.Equatable {
   public static func == (lhs: RepairClubSDK.SessionLog, rhs: RepairClubSDK.SessionLog) -> Swift.Bool
