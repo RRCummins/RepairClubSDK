@@ -400,6 +400,9 @@ public struct VehicleEntry : Swift.Codable, Swift.Identifiable, Swift.Hashable, 
   public var fullDescription: Swift.String {
     get
   }
+  public var fileDescription: Swift.String {
+    get
+  }
   public var yearString: Swift.String {
     get
   }
@@ -2371,8 +2374,8 @@ extension RepairClubSDK.ResponseStatus {
 public struct RepairClubAPIVINResponse : Swift.Codable, Swift.Sendable {
   public let decodeType: Swift.String
   public let vin: Swift.String
-  public let errorText: Swift.String
-  public let vehicleDescriptor: Swift.String
+  public let errorText: Swift.String?
+  public let vehicleDescriptor: Swift.String?
   public let make: Swift.String
   public let model: Swift.String
   public let modelYear: Swift.String

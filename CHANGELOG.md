@@ -10,12 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.5.4] - 2025-11-4
+## [1.5.4] - 2025-11-7
 ### Added
 - Updates to add better support for trims
 - Updates the scan narrative module layout
 - Adds unique modules to the scan narrative
 - Refactored and cleaning up VIN decode
+- Adds new avr_generic_test catalog
 
 ### Fixed
 - Fixes a BLE crash
