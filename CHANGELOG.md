@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.5.4] - 2025-11-7
+## [1.5.4] - 2025-11-11
 ### Added
 - Updates to add better support for trims
 - Updates the scan narrative module layout
